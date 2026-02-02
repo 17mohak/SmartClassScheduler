@@ -3,10 +3,10 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     RoomViewSet, TeacherViewSet, SubjectViewSet,
     StudentBatchViewSet, DepartmentViewSet,
-    GeneratedTimetableViewSet, TimetableSlotViewSet
+    GeneratedTimetableViewSet, TimetableSlotViewSet,
+    trigger_generation # <--- Import the new view function
 )
 
-# This router automatically creates URLs like /api/teachers/, /api/rooms/, etc.
 router = DefaultRouter()
 router.register(r'rooms', RoomViewSet)
 router.register(r'teachers', TeacherViewSet)
@@ -18,4 +18,6 @@ router.register(r'slots', TimetableSlotViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    # This creates the new link: http://127.0.0.1:8000/api/generate/
+    path('generate/', trigger_generation, name='generate-timetable'),
 ]
