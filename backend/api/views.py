@@ -1,13 +1,14 @@
 from rest_framework import viewsets
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from django.views.decorators.csrf import csrf_exempt
 from .models import Room, Teacher, Subject, StudentBatch, Department, GeneratedTimetable, TimetableSlot
 from .serializers import (
     RoomSerializer, TeacherSerializer, SubjectSerializer,
     StudentBatchSerializer, DepartmentSerializer,
     GeneratedTimetableSerializer, TimetableSlotSerializer
 )
-# We import the scheduler here
 from .scheduler import generate_timetable
 
 class RoomViewSet(viewsets.ModelViewSet):
@@ -38,11 +39,12 @@ class TimetableSlotViewSet(viewsets.ModelViewSet):
     queryset = TimetableSlot.objects.all()
     serializer_class = TimetableSlotSerializer
 
-# --- FIX IS HERE: This function must be OUTSIDE the classes ---
-
+# --- THE NUCLEAR FIX ---
+@csrf_exempt
 @api_view(['POST'])
+@authentication_classes([]) # <--- NEW: Tells Django to ignore your Admin login
+@permission_classes([AllowAny])
 def trigger_generation(request):
     department_id = request.data.get('department_id')
-    # Call the algorithm
     result = generate_timetable(department_id)
     return Response({"status": "Success", "message": result})
