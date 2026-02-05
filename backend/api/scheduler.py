@@ -3,130 +3,129 @@ from .models import Room, Teacher, Subject, StudentBatch, TimetableSlot, Generat
 
 
 def generate_timetable(department_id):
-    # --- 1. SETUP & DATA FETCHING ---
     model = cp_model.CpModel()
 
-    # Fetch all resources for this department
-    teachers = list(Teacher.objects.filter(department_id=department_id))
-    rooms = list(Room.objects.all())  # Assume rooms are shared or just use all
-    subjects = list(Subject.objects.filter(department_id=department_id))
+    # 1. Fetch Data
+    # Fetch batches only for this department
     batches = list(StudentBatch.objects.filter(department_id=department_id))
+    # Fetch subjects only for these batches
+    subjects = list(Subject.objects.filter(department_id=department_id))
+    teachers = list(Teacher.objects.filter(department_id=department_id))
+    rooms = list(Room.objects.all())
 
     if not teachers or not subjects or not batches:
         return "Error: Missing data. Need Teachers, Subjects, and Batches."
 
-    # Define Dimensions
     days = ['MON', 'TUE', 'WED', 'THU', 'FRI']
-    slots_per_day = 6  # E.g., 9am-4pm
-    all_slots = range(len(days) * slots_per_day)  # 0 to 29
+    slots_per_day = 8  # 9 AM to 5 PM
 
-    # --- 2. CREATE VARIABLES ---
-    # shifts[(t, s, b, r, day, slot)] = 1 if class is scheduled, else 0
+    # 2. Create Variables
     shifts = {}
 
-    for t in teachers:
-        for s in subjects:
-            for b in batches:
-                # Basic check: Does this teacher teach this subject? (Simplified: Yes)
-                # Does this batch take this subject? (Simplified: Yes)
-                for r in rooms:
-                    for d_idx, day in enumerate(days):
-                        for slot in range(slots_per_day):
-                            key = (t.id, s.id, b.id, r.id, day, slot)
-                            shifts[key] = model.NewBoolVar(f'shift_{key}')
-
-    # --- 3. HARD CONSTRAINTS ---
-
-    # C1: Each class (Subject + Batch) must be taught exactly X times a week.
-    # (For simplicity, we assume every Subject-Batch pair needs 'weekly_lectures')
     for s in subjects:
-        for b in batches:
-            # Gather all possible slots/rooms/teachers for this specific subject-batch
-            candidates = []
-            for t in teachers:
-                for r in rooms:
-                    for d_idx, day in enumerate(days):
-                        for slot in range(slots_per_day):
-                            key = (t.id, s.id, b.id, r.id, day, slot)
-                            if key in shifts:
-                                candidates.append(shifts[key])
+        # CRITICAL: Only schedule this subject for its assigned batch!
+        # If subject.batch is None, we skip it (or assign to all, but let's be strict)
+        target_batch = s.batch
+        if not target_batch:
+            continue
 
-            # Sum of all occurrences must equal weekly_lectures (e.g., 3)
-            if candidates:
-                model.Add(sum(candidates) == s.weekly_lectures)
+            # Assigned Teacher (from DB)
+        t = s.teacher
+        if not t:
+            continue  # Skip subjects with no teacher assigned
 
-    # C2: No Teacher can be in two places at once
+        for r in rooms:
+            # Capacity Check
+            if target_batch.size > r.capacity:
+                continue
+
+            for day in days:
+                for slot in range(slots_per_day):
+                    # --- NEW CONSTRAINT: TEACHER PREFERENCES ---
+                    # If this slot is outside the teacher's preferred hours, SKIP IT.
+                    if slot < t.preferred_start_slot or slot >= t.preferred_end_slot:
+                        continue
+                        # -------------------------------------------
+
+                    key = (t.id, s.id, target_batch.id, r.id, day, slot)
+                    shifts[key] = model.NewBoolVar(f'shift_{key}')
+
+    # 3. Add Hard Constraints
+
+    # C1: Weekly Lectures (Must happen X times)
+    for s in subjects:
+        if not s.batch or not s.teacher: continue
+
+        candidates = []
+        for r in rooms:
+            if s.batch.size > r.capacity: continue
+            for day in days:
+                for slot in range(slots_per_day):
+                    t = s.teacher
+                    # Check preferences again to ensure we access valid keys
+                    if slot < t.preferred_start_slot or slot >= t.preferred_end_slot:
+                        continue
+
+                    key = (t.id, s.id, s.batch.id, r.id, day, slot)
+                    if key in shifts:
+                        candidates.append(shifts[key])
+
+        if candidates:
+            model.Add(sum(candidates) == s.weekly_lectures)
+
+    # C2: No Overlap - Teacher
     for t in teachers:
-        for d_idx, day in enumerate(days):
+        for day in days:
             for slot in range(slots_per_day):
-                # Sum of all classes this teacher teaches in this specific slot <= 1
-                teacher_moves = []
-                for s in subjects:
-                    for b in batches:
-                        for r in rooms:
-                            key = (t.id, s.id, b.id, r.id, day, slot)
-                            if key in shifts:
-                                teacher_moves.append(shifts[key])
-                model.Add(sum(teacher_moves) <= 1)
+                # Gather all simultaneous classes for this teacher
+                moves = [var for k, var in shifts.items() if k[0] == t.id and k[4] == day and k[5] == slot]
+                if moves:
+                    model.Add(sum(moves) <= 1)
 
-    # C3: No Room can host two classes at once
+    # C3: No Overlap - Room
     for r in rooms:
-        for d_idx, day in enumerate(days):
+        for day in days:
             for slot in range(slots_per_day):
-                room_moves = []
-                for t in teachers:
-                    for s in subjects:
-                        for b in batches:
-                            key = (t.id, s.id, b.id, r.id, day, slot)
-                            if key in shifts:
-                                room_moves.append(shifts[key])
-                model.Add(sum(room_moves) <= 1)
+                moves = [var for k, var in shifts.items() if k[3] == r.id and k[4] == day and k[5] == slot]
+                if moves:
+                    model.Add(sum(moves) <= 1)
 
-    # C4: No Batch can attend two classes at once
+    # C4: No Overlap - Batch
     for b in batches:
-        for d_idx, day in enumerate(days):
+        for day in days:
             for slot in range(slots_per_day):
-                batch_moves = []
-                for t in teachers:
-                    for s in subjects:
-                        for r in rooms:
-                            key = (t.id, s.id, b.id, r.id, day, slot)
-                            if key in shifts:
-                                batch_moves.append(shifts[key])
-                model.Add(sum(batch_moves) <= 1)
+                moves = [var for k, var in shifts.items() if k[2] == b.id and k[4] == day and k[5] == slot]
+                if moves:
+                    model.Add(sum(moves) <= 1)
 
-    # --- 4. SOLVE ---
+    # 4. Solve
     solver = cp_model.CpSolver()
     status = solver.Solve(model)
 
     if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
-        # Create a new Timetable Record
         dept = Department.objects.get(id=department_id)
-        new_tt = GeneratedTimetable.objects.create(department=dept, status="DRAFT")
+        # Clear old drafts for cleanliness (Optional)
+        # GeneratedTimetable.objects.filter(department=dept, status="DRAFT").delete()
+
+        new_tt = GeneratedTimetable.objects.create(department=dept, status="FINAL")
 
         count = 0
-        # Extract results and save to DB
         for key, var in shifts.items():
             if solver.Value(var) == 1:
                 t_id, s_id, b_id, r_id, day, slot_num = key
-
-                # Convert slot_num to actual time (Simplified logic)
                 start_hour = 9 + slot_num
-                start_time = f"{start_hour:02d}:00"
-                end_time = f"{start_hour + 1:02d}:00"
 
                 TimetableSlot.objects.create(
                     timetable=new_tt,
                     day=day,
-                    start_time=start_time,
-                    end_time=end_time,
+                    start_time=f"{start_hour:02d}:00",
+                    end_time=f"{start_hour + 1:02d}:00",
                     room_id=r_id,
                     teacher_id=t_id,
                     subject_id=s_id,
                     batch_id=b_id
                 )
                 count += 1
+        return f"Success! Created {count} slots for {len(batches)} batches."
 
-        return f"Optimization Successful! Created {count} slots in Timetable #{new_tt.id}"
-
-    return "No solution found. Try adding more rooms or reducing lectures."
+    return "Conflict! No schedule possible. Try relaxing teacher hours or adding rooms."
