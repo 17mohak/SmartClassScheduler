@@ -1,13 +1,558 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chronos | AI-Powered Academic Scheduling</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    animation: { 'blob': 'blob 7s infinite' },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #0f172a; color: white; overflow-x: hidden; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 4px; }
+
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.3s ease; }
+        .glass-card:hover { transform: translateY(-5px); border-color: rgba(99, 102, 241, 0.5); box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.3); }
+
+        .text-gradient { background: linear-gradient(to right, #818cf8, #c084fc, #f472b6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .nav-link.active::after { content: ''; display: block; width: 100%; height: 2px; background: #818cf8; margin-top: 4px; }
+
+        .custom-input { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(99, 102, 241, 0.2); color: white; transition: all 0.3s; width: 100%; padding: 8px; border-radius: 8px; }
+        .custom-input:focus { border-color: #818cf8; outline: none; box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.2); }
+
+        .loader { border: 3px solid rgba(255,255,255,0.1); border-left-color: #6366f1; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .page-transition { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; transform: translateY(100%); pointer-events: none; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col relative">
+
+    <div id="login-overlay" class="fixed inset-0 z-[100] bg-slate-900/95 backdrop-blur-xl flex items-center justify-center hidden">
+        <div class="glass p-8 rounded-2xl w-full max-w-md space-y-6 relative overflow-hidden border border-white/10 shadow-2xl">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-purple-500"></div>
+            <div class="text-center">
+                <div class="w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl mx-auto flex items-center justify-center text-3xl font-bold mb-4 shadow-lg shadow-indigo-500/30">C</div>
+                <h2 class="text-3xl font-bold">Welcome Back</h2>
+                <p class="text-slate-400">Sign in to manage schedules</p>
+            </div>
+            <form onsubmit="auth.login(event)" class="space-y-4">
+                <div>
+                    <label class="text-xs uppercase font-bold text-slate-500 tracking-wider">Username</label>
+                    <input type="text" id="login-user" class="custom-input mt-1" placeholder="admin" required>
+                </div>
+                <div>
+                    <label class="text-xs uppercase font-bold text-slate-500 tracking-wider">Password</label>
+                    <input type="password" id="login-pass" class="custom-input mt-1" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-bold transition-all shadow-lg hover:shadow-indigo-500/50">Sign In</button>
+            </form>
+            <button onclick="auth.closeLogin()" class="w-full text-sm text-slate-500 hover:text-white">Cancel</button>
+        </div>
+    </div>
+
+    <div class="page-transition" id="pageTransition"></div>
+
+    <nav class="fixed w-full z-50 glass border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center gap-3 cursor-pointer" onclick="router.navigate('home')">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-500/30">C</div>
+                    <span class="font-bold text-2xl tracking-tight">Chronos</span>
+                </div>
+
+                <div class="hidden md:flex items-center space-x-8">
+                    <button onclick="router.navigate('home')" id="nav-home" class="nav-link active text-sm font-medium hover:text-indigo-400 transition-colors">Product</button>
+                    <button onclick="router.navigate('dashboard')" id="nav-dashboard" class="nav-link text-sm font-medium hover:text-indigo-400 transition-colors">Dashboard</button>
+
+                    <div id="nav-auth-container">
+                        <button onclick="auth.openLogin()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-full text-sm font-medium transition-all shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50 hover:scale-105">
+                            Login
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main id="app" class="flex-grow pt-20 relative"></main>
+
+    <footer class="border-t border-white/10 bg-slate-900/50 backdrop-blur-sm py-8 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-slate-400 text-sm">
+            <p>&copy; 2026 Chronos AI. Optimizing Education.</p>
+        </div>
+    </footer>
+
+    <script>
+        const API_URL = 'http://127.0.0.1:8000/api';
+
+        // --- Auth System ---
+        const auth = {
+            token: null,
+            user: null,
+
+            openLogin: () => {
+                document.getElementById('login-overlay').classList.remove('hidden');
+                gsap.from("#login-overlay > div", { y: 50, opacity: 0, duration: 0.3 });
+            },
+
+            closeLogin: () => {
+                document.getElementById('login-overlay').classList.add('hidden');
+            },
+
+            login: async (e) => {
+                e.preventDefault();
+                const u = document.getElementById('login-user').value;
+                const p = document.getElementById('login-pass').value;
+
+                try {
+                    const res = await fetch(`${API_URL}/login/`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({username: u, password: p})
+                    });
+
+                    if(!res.ok) throw new Error("Invalid Credentials");
+                    const data = await res.json();
+
+                    auth.token = data.token;
+                    auth.user = data; // contains is_admin, teacher_id, etc.
+
+                    auth.closeLogin();
+                    auth.updateNav();
+                    router.navigate('dashboard');
+                } catch(err) {
+                    alert("Login Failed: " + err.message);
+                }
+            },
+
+            logout: () => {
+                auth.token = null;
+                auth.user = null;
+                auth.updateNav();
+                router.navigate('home');
+            },
+
+            updateNav: () => {
+                const container = document.getElementById('nav-auth-container');
+                if (auth.user) {
+                    const role = auth.user.is_admin ? "ADMIN" : "FACULTY";
+                    container.innerHTML = `
+                        <div class="flex items-center gap-4">
+                            <span class="text-xs font-mono text-indigo-300 bg-indigo-900/30 px-2 py-1 rounded">${role}</span>
+                            <button onclick="auth.logout()" class="text-sm text-slate-400 hover:text-white">Logout</button>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <button onclick="auth.openLogin()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-full text-sm font-medium transition-all shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50 hover:scale-105">
+                            Login
+                        </button>
+                    `;
+                }
+            }
+        };
+
+        // --- Router ---
+        const router = {
+            navigate: (pageId) => {
+                // Auth Guard for Dashboard
+                if (pageId === 'dashboard' && !auth.user) {
+                    auth.openLogin();
+                    return;
+                }
+
+                document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+                const activeNav = document.getElementById(`nav-${pageId}`);
+                if(activeNav) activeNav.classList.add('active');
+
+                const tl = gsap.timeline();
+                tl.to("#pageTransition", { y: "0%", duration: 0.4, ease: "power2.inOut" })
+                  .call(() => {
+                      app.render(pageId);
+                      window.scrollTo(0,0);
+                  })
+                  .to("#pageTransition", { y: "-100%", duration: 0.4, ease: "power2.inOut" });
+            }
+        };
+
+        // --- View Controller ---
+        const app = {
+            state: { subjects: [], teachers: [], batches: [], currentDept: null },
+            activeTab: 'subjects',
+
+            render: (pageId) => {
+                const container = document.getElementById('app');
+                if (pageId === 'home') {
+                    container.innerHTML = views.home();
+                    app.animateHome();
+                } else if (pageId === 'dashboard') {
+                    container.innerHTML = views.dashboard();
+                    app.initDashboard();
+                }
+            },
+
+            // --- Home Page Logic ---
+            animateHome: () => {
+                gsap.from(".hero-content > *", { y: 50, opacity: 0, duration: 1, stagger: 0.1, ease: "power3.out" });
+                gsap.from(".hero-visual", { x: 50, opacity: 0, duration: 1.2, delay: 0.3, ease: "power3.out" });
+                gsap.to(".floating-card", { y: -15, duration: 2, repeat: -1, yoyo: true, stagger: { each: 0.5, from: "random" }, ease: "sine.inOut" });
+
+                // Re-init ScrollTrigger for feature cards
+                gsap.utils.toArray('.feature-card').forEach((card, i) => {
+                    gsap.from(card, {
+                        scrollTrigger: { trigger: card, start: "top 85%" },
+                        y: 50, opacity: 0, duration: 0.8, delay: i * 0.1
+                    });
+                });
+            },
+
+            // --- Dashboard Logic ---
+            initDashboard: async () => {
+                const roleBadge = document.getElementById('user-role-badge');
+
+                if (auth.user.is_admin) {
+                    roleBadge.textContent = "ADMIN ACCESS";
+                    document.getElementById('admin-controls').classList.remove('hidden');
+                    // Load Departments into dropdown
+                    const res = await fetch(`${API_URL}/departments/`, { headers: {'Authorization': `Token ${auth.token}`} });
+                    const depts = await res.json();
+                    const sel = document.getElementById('dept-select');
+                    sel.innerHTML = '<option value="" disabled selected>Select Department</option>';
+                    depts.forEach(d => sel.innerHTML += `<option value="${d.id}">${d.name}</option>`);
+                } else {
+                    roleBadge.textContent = `FACULTY VIEW (${auth.user.username})`;
+                    document.getElementById('faculty-controls').classList.remove('hidden');
+                    // Lock Faculty to their dept
+                    app.state.currentDept = auth.user.department_id;
+                    app.refreshData(); // Load their schedule immediately
+                }
+            },
+
+            // Called when Admin selects a dept OR Faculty loads
+            refreshData: async () => {
+                // If admin, read select; if faculty, use fixed dept
+                const deptId = auth.user.is_admin ? document.getElementById('dept-select').value : auth.user.department_id;
+                if(!deptId) return;
+                app.state.currentDept = deptId;
+
+                // Load Schedule Grid
+                const sRes = await fetch(`${API_URL}/slots/`, { headers: {'Authorization': `Token ${auth.token}`} });
+                const slots = await sRes.json();
+                app.renderGrid(slots);
+
+                // If Admin, also load Data Manager
+                if(auth.user.is_admin) {
+                    const [bRes, tRes, subRes] = await Promise.all([
+                        fetch(`${API_URL}/batches/`, { headers: {'Authorization': `Token ${auth.token}`} }),
+                        fetch(`${API_URL}/teachers/`, { headers: {'Authorization': `Token ${auth.token}`} }),
+                        fetch(`${API_URL}/subjects/`, { headers: {'Authorization': `Token ${auth.token}`} })
+                    ]);
+
+                    const [batches, teachers, subjects] = await Promise.all([bRes.json(), tRes.json(), subRes.json()]);
+
+                    // Filter for current dept
+                    app.state.batches = batches.filter(x => x.department == deptId);
+                    app.state.teachers = teachers.filter(x => x.department == deptId);
+                    app.state.subjects = subjects.filter(x => x.department == deptId);
+
+                    app.renderDataManager();
+                }
+            },
+
+            renderDataManager: () => {
+                const container = document.getElementById('data-manager-content');
+                container.innerHTML = '';
+
+                if (app.activeTab === 'subjects') {
+                    if(app.state.subjects.length === 0) return container.innerHTML = '<div class="text-center text-slate-500">No subjects found.</div>';
+
+                    app.state.subjects.forEach(sub => {
+                        // Batch Dropdown
+                        let bOpts = `<option value="">-- Batch --</option>`;
+                        app.state.batches.forEach(b => bOpts += `<option value="${b.id}" ${sub.batch==b.id?'selected':''}>${b.name}</option>`);
+
+                        // Teacher Dropdown
+                        let tOpts = `<option value="">-- Faculty --</option>`;
+                        app.state.teachers.forEach(t => tOpts += `<option value="${t.id}" ${sub.teacher==t.id?'selected':''}>${t.name}</option>`);
+
+                        container.innerHTML += `
+                            <div class="glass p-3 rounded-lg mb-2 border-l-4 border-indigo-500">
+                                <div class="font-bold text-white mb-2 flex justify-between">
+                                    ${sub.name}
+                                    <span class="text-xs bg-slate-700 px-1 rounded font-normal text-slate-300">Code: ${sub.code||'N/A'}</span>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 mb-2">
+                                    <select class="custom-input text-xs py-1 sub-batch" data-id="${sub.id}">${bOpts}</select>
+                                    <select class="custom-input text-xs py-1 sub-teacher" data-id="${sub.id}">${tOpts}</select>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[10px] uppercase text-slate-400">Lectures:</span>
+                                    <input type="number" value="${sub.weekly_lectures}" class="custom-input text-xs py-1 w-12 sub-lectures" data-id="${sub.id}">
+                                </div>
+                            </div>`;
+                    });
+                } else {
+                    // Teachers Tab
+                    if(app.state.teachers.length === 0) return container.innerHTML = '<div class="text-center text-slate-500">No faculty found.</div>';
+
+                    app.state.teachers.forEach(t => {
+                        container.innerHTML += `
+                            <div class="glass p-3 rounded-lg mb-2 border-l-4 border-pink-500">
+                                <div class="font-bold text-white mb-2">${t.name}</div>
+                                <div class="flex gap-2 items-center text-xs">
+                                    <span class="text-slate-400">Hours:</span>
+                                    <select class="custom-input py-1 w-20 t-start" data-id="${t.id}">
+                                        ${[0,1,2,3].map(i => `<option value="${i}" ${t.preferred_start_slot==i?'selected':''}>${i+9} AM</option>`).join('')}
+                                    </select>
+                                    <span>to</span>
+                                    <select class="custom-input py-1 w-20 t-end" data-id="${t.id}">
+                                        ${[4,5,6,7,8].map(i => `<option value="${i}" ${t.preferred_end_slot==i?'selected':''}>${i-3} PM</option>`).join('')}
+                                    </select>
+                                </div>
+                            </div>`;
+                    });
+                }
+            },
+
+            saveChanges: async () => {
+                const btn = document.getElementById('saveBtn');
+                btn.innerHTML = 'Saving...';
+                const updates = [];
+
+                // Save Subject Changes
+                document.querySelectorAll('.sub-batch').forEach(el => {
+                    const id = el.dataset.id;
+                    updates.push(fetch(`${API_URL}/subjects/${id}/`, {
+                        method: 'PATCH',
+                        headers: {'Content-Type': 'application/json', 'Authorization': `Token ${auth.token}`},
+                        body: JSON.stringify({
+                            batch: el.value || null,
+                            teacher: document.querySelector(`.sub-teacher[data-id="${id}"]`).value || null,
+                            weekly_lectures: document.querySelector(`.sub-lectures[data-id="${id}"]`).value
+                        })
+                    }));
+                });
+
+                // Save Teacher Prefs (Admin Side)
+                document.querySelectorAll('.t-start').forEach(el => {
+                    const id = el.dataset.id;
+                    updates.push(fetch(`${API_URL}/teachers/${id}/`, {
+                        method: 'PATCH',
+                        headers: {'Content-Type': 'application/json', 'Authorization': `Token ${auth.token}`},
+                        body: JSON.stringify({
+                            preferred_start_slot: el.value,
+                            preferred_end_slot: document.querySelector(`.t-end[data-id="${id}"]`).value
+                        })
+                    }));
+                });
+
+                await Promise.all(updates);
+                await app.refreshData();
+                btn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+                alert("Database Updated!");
+            },
+
+            runGeneration: async () => {
+                if(!app.state.currentDept) return alert("Select Dept");
+                const btn = document.getElementById('genBtn');
+                btn.innerHTML = "Processing...";
+
+                try {
+                    await fetch(`${API_URL}/generate/`, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json', 'Authorization': `Token ${auth.token}`},
+                        body: JSON.stringify({department_id: app.state.currentDept})
+                    });
+                    await app.refreshData();
+                    alert("Schedule Generated Successfully!");
+                } catch(e) {
+                    alert("Generation Error");
+                } finally {
+                    btn.innerHTML = '<i class="fas fa-magic"></i> Generate Timetable';
+                }
+            },
+
+            saveMyPrefs: async () => {
+                const s = document.getElementById('my-start').value;
+                const e = document.getElementById('my-end').value;
+                await fetch(`${API_URL}/teachers/${auth.user.teacher_id}/`, {
+                    method: 'PATCH',
+                    headers: {'Content-Type': 'application/json', 'Authorization': `Token ${auth.token}`},
+                    body: JSON.stringify({preferred_start_slot: s, preferred_end_slot: e})
+                });
+                alert("Preferences Saved!");
+            },
+
+            renderGrid: (slots) => {
+                const tbody = document.getElementById('table-body');
+                tbody.innerHTML = '';
+                const matrix = Array.from({ length: 8 }, () => Array(5).fill(null));
+                const dayMap = { 'MON': 0, 'TUE': 1, 'WED': 2, 'THU': 3, 'FRI': 4 };
+
+                // Maps for Names
+                const tMap = {}; app.state.teachers.forEach(t => tMap[t.id] = t.name);
+                const sMap = {}; app.state.subjects.forEach(s => sMap[s.id] = s.name);
+                const bMap = {}; app.state.batches.forEach(b => bMap[b.id] = b.name);
+
+                slots.forEach(slot => {
+                    // Filter: Only show slots for current dept (Admin) or My Slots (Faculty)
+                    // (Assuming API returns all, we filter visually here)
+                    if(!auth.user.is_admin && slot.teacher != auth.user.teacher_id) return;
+
+                    const h = parseInt(slot.start_time.split(':')[0]) - 9;
+                    if(h >= 0 && h < 8 && dayMap[slot.day] !== undefined) matrix[h][dayMap[slot.day]] = slot;
+                });
+
+                matrix.forEach((row, i) => {
+                    let html = `<tr class="border-b border-white/5 h-24"><td class="p-2 border-r border-white/5 font-mono text-slate-500 pt-3 text-xs align-top">${i+9}:00</td>`;
+                    row.forEach(cell => {
+                        html += `<td class="p-1 border-r border-white/5 w-1/5">`;
+                        if(cell) {
+                            const colors = ['bg-indigo-600/20 border-indigo-500/30', 'bg-purple-600/20 border-purple-500/30', 'bg-emerald-600/20 border-emerald-500/30'];
+                            const color = colors[cell.batch % colors.length] || colors[0];
+                            // Admin sees all details; Faculty sees simple view
+                            const subName = auth.user.is_admin ? (sMap[cell.subject] || 'Subject') : (cell.subjectName || 'Class');
+
+                            html += `
+                                <div class="${color} border rounded p-2 h-full text-xs hover:bg-white/5 transition-colors cursor-pointer group flex flex-col justify-between">
+                                    <div class="font-bold text-white line-clamp-2">${subName}</div>
+                                    <div class="mt-2 text-[10px] text-slate-300 flex justify-between">
+                                        <span>Rm ${cell.room}</span>
+                                        ${auth.user.is_admin ? `<span class="bg-white/10 px-1 rounded">${bMap[cell.batch]||'Batch'}</span>` : ''}
+                                    </div>
+                                </div>`;
+                        }
+                        html += `</td>`;
+                    });
+                    html += `</tr>`;
+                    tbody.innerHTML += html;
+                });
+            }
+        };
+
+        // --- View Templates ---
+        const views = {
+            home: () => `
+                <section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-10">
+                    <div class="absolute top-0 left-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+                    <div class="absolute top-0 right-1/4 w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+                    <div class="relative max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                        <div class="space-y-8 z-10 hero-content">
+                            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-indigo-300 text-sm font-semibold border border-indigo-500/30"><span class="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span> Intelligent Scheduler</div>
+                            <h1 class="text-5xl md:text-7xl font-extrabold leading-tight">Stop Clashing. <br><span class="text-gradient">Start Teaching.</span></h1>
+                            <p class="text-lg text-slate-300 max-w-lg leading-relaxed">The intelligent timetable generator that balances faculty workload, maximizes room utilization, and adapts to multidisciplinary curricula in seconds.</p>
+                            <div class="flex gap-4">
+                                <button onclick="router.navigate('dashboard')" class="px-8 py-4 bg-white text-slate-900 rounded-full font-bold text-lg hover:bg-indigo-50 transition-colors shadow-xl">Get Started</button>
+                                <button class="px-8 py-4 glass rounded-full font-bold text-lg hover:bg-white/10 transition-colors flex items-center gap-2"><i class="fas fa-play"></i> Demo</button>
+                            </div>
+                        </div>
+                        <div class="relative lg:h-[600px] w-full flex items-center justify-center hero-visual">
+                            <div class="relative w-full max-w-md aspect-square">
+                                <div class="absolute top-0 right-0 w-64 h-40 glass-card rounded-2xl p-4 transform rotate-6 z-10 floating-card"><div class="flex justify-between items-start mb-2"><div class="w-8 h-8 rounded bg-pink-500/20 text-pink-400 flex items-center justify-center"><i class="fas fa-flask"></i></div><span class="text-xs text-slate-400">09:00 AM</span></div><div class="h-2 w-1/2 bg-slate-700 rounded mb-2"></div><div class="h-2 w-3/4 bg-slate-700 rounded"></div></div>
+                                <div class="absolute top-20 left-0 w-64 h-40 glass-card rounded-2xl p-4 transform -rotate-3 z-20 floating-card" style="animation-delay: 1s;"><div class="flex justify-between items-start mb-2"><div class="w-8 h-8 rounded bg-indigo-500/20 text-indigo-400 flex items-center justify-center"><i class="fas fa-laptop-code"></i></div><span class="text-xs text-slate-400">11:00 AM</span></div><div class="h-2 w-1/2 bg-slate-700 rounded mb-2"></div><div class="h-2 w-3/4 bg-slate-700 rounded"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="py-24 bg-slate-900/50">
+                    <div class="max-w-7xl mx-auto px-4 text-center mb-16"><h2 class="text-3xl font-bold mb-4">Why Chronos?</h2></div>
+                    <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+                        ${['AI Optimization','Faculty Wellness','Multi-Shift'].map((t,i)=>`
+                            <div class="glass-card p-8 rounded-2xl feature-card" data-index="${i}">
+                                <div class="w-12 h-12 rounded bg-slate-800 flex items-center justify-center mb-4 text-indigo-400 text-xl"><i class="fas fa-check"></i></div>
+                                <h3 class="text-xl font-bold mb-2">${t}</h3><p class="text-slate-400">Automated scheduling with constraint programming.</p>
+                            </div>`).join('')}
+                    </div>
+                </section>`,
+
+            dashboard: () => `
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 h-[calc(100vh-80px)]">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                        <div class="flex items-center gap-4 w-full md:w-auto glass p-2 rounded-xl">
+                            <span id="user-role-badge" class="px-3 py-1 bg-indigo-600 rounded text-xs font-bold tracking-wider uppercase">Loading...</span>
+
+                            <div id="admin-controls" class="hidden flex items-center gap-2">
+                                <div class="h-4 w-px bg-white/20"></div>
+                                <select id="dept-select" onchange="app.refreshData()" class="bg-transparent text-sm outline-none w-48"><option>Loading Depts...</option></select>
+                            </div>
+                        </div>
+                        <button onclick="app.refreshData()" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm transition-colors"><i class="fas fa-sync-alt"></i> Refresh</button>
+                    </div>
+
+                    <div class="flex flex-col lg:flex-row gap-6 h-full overflow-hidden">
+
+                        <div class="w-full lg:w-1/3 glass rounded-2xl p-6 flex flex-col gap-4 overflow-hidden">
+                            <div id="admin-controls" class="flex border-b border-white/10">
+                                <button onclick="app.activeTab='subjects';app.renderDataManager()" class="px-4 py-2 text-sm font-bold text-indigo-400 border-b-2 border-indigo-400">Subjects</button>
+                                <button onclick="app.activeTab='teachers';app.renderDataManager()" class="px-4 py-2 text-sm font-bold text-slate-500 hover:text-white">Faculty</button>
+                            </div>
+
+                            <div id="faculty-controls" class="hidden space-y-4">
+                                <h3 class="font-bold text-pink-300">My Preferences</h3>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div><label class="text-[10px] uppercase">Start</label><select id="my-start" class="custom-input py-1"><option value="0">9 AM</option><option value="1">10 AM</option></select></div>
+                                    <div><label class="text-[10px] uppercase">End</label><select id="my-end" class="custom-input py-1"><option value="7">4 PM</option><option value="8">5 PM</option></select></div>
+                                </div>
+                                <button onclick="app.saveMyPrefs()" class="w-full bg-slate-700 hover:bg-slate-600 py-2 rounded text-xs font-bold">Save Preferences</button>
+                            </div>
+
+                            <div id="data-manager-content" class="flex-grow overflow-y-auto pr-2 pt-4 space-y-2"></div>
+
+                            <div class="pt-4 border-t border-white/10 space-y-3">
+                                <button onclick="app.saveChanges()" id="saveBtn" class="w-full py-3 bg-slate-700 hover:bg-slate-600 rounded-lg font-semibold transition-colors text-sm"><i class="fas fa-save"></i> Save Changes</button>
+                                <button onclick="app.runGeneration()" id="genBtn" class="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl font-bold shadow-lg hover:shadow-indigo-600/40 transition-all text-sm"><i class="fas fa-magic"></i> Generate Timetable</button>
+                            </div>
+                        </div>
+
+                        <div class="w-full lg:w-2/3 glass rounded-2xl flex flex-col overflow-hidden">
+                            <div class="p-4 border-b border-white/10 bg-slate-900/30 flex justify-between items-center"><h3 class="font-bold">Live Schedule</h3><div class="flex gap-2"><span class="w-3 h-3 rounded-full bg-red-500/50"></span><span class="w-3 h-3 rounded-full bg-yellow-500/50"></span><span class="w-3 h-3 rounded-full bg-green-500/50"></span></div></div>
+                            <div class="flex-grow overflow-auto p-4 bg-slate-900/20">
+                                <table class="w-full text-left border-collapse min-w-[600px]">
+                                    <thead><tr><th class="p-3 text-xs text-slate-500 border-b border-white/10 w-20">Time</th><th class="p-3 text-xs text-slate-500 border-b border-white/10">Mon</th><th class="p-3 text-xs text-slate-500 border-b border-white/10">Tue</th><th class="p-3 text-xs text-slate-500 border-b border-white/10">Wed</th><th class="p-3 text-xs text-slate-500 border-b border-white/10">Thu</th><th class="p-3 text-xs text-slate-500 border-b border-white/10">Fri</th></tr></thead>
+                                    <tbody id="table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>`
+        };
+
+        // Start
+        window.addEventListener('DOMContentLoaded', () => {
+            gsap.registerPlugin(ScrollTrigger);
+            auth.updateNav();
+            router.navigate('home');
+        });
+    </script>
+</body>
 </html>
