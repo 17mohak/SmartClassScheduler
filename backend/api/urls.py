@@ -4,7 +4,8 @@ from .views import (
     RoomViewSet, TeacherViewSet, SubjectViewSet,
     StudentBatchViewSet, DepartmentViewSet,
     GeneratedTimetableViewSet, TimetableSlotViewSet,
-    trigger_generation # <--- Import the new view function
+    PinnedSlotViewSet,
+    trigger_generation, approve_timetable, export_timetable_pdf
 )
 
 router = DefaultRouter()
@@ -15,9 +16,11 @@ router.register(r'batches', StudentBatchViewSet)
 router.register(r'departments', DepartmentViewSet)
 router.register(r'timetables', GeneratedTimetableViewSet)
 router.register(r'slots', TimetableSlotViewSet)
+router.register(r'pinned-slots', PinnedSlotViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    # This creates the new link: http://127.0.0.1:8000/api/generate/
     path('generate/', trigger_generation, name='generate-timetable'),
+    path('timetables/<int:pk>/approve/', approve_timetable, name='approve-timetable'),
+    path('timetables/<int:pk>/pdf/', export_timetable_pdf, name='export-timetable-pdf'),
 ]

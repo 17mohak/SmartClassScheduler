@@ -1,7 +1,6 @@
 from django.contrib import admin
-from .models import Room, Teacher, Subject, StudentBatch, Department, GeneratedTimetable, TimetableSlot
+from .models import Room, Teacher, Subject, StudentBatch, Department, GeneratedTimetable, TimetableSlot, PinnedSlot
 
-# Notice: We inherit from (admin.ModelAdmin), NOT (admin.register...)
 
 @admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
@@ -9,15 +8,15 @@ class RoomAdmin(admin.ModelAdmin):
 
 @admin.register(Teacher)
 class TeacherAdmin(admin.ModelAdmin):
-    list_display = ('name', 'department', 'email')
+    list_display = ('name', 'department', 'email', 'max_classes_per_day')
 
 @admin.register(Subject)
 class SubjectAdmin(admin.ModelAdmin):
-    list_display = ('name', 'code', 'department')
+    list_display = ('name', 'code', 'department', 'batch', 'teacher')
 
 @admin.register(StudentBatch)
 class StudentBatchAdmin(admin.ModelAdmin):
-    list_display = ('name', 'size', 'department')
+    list_display = ('name', 'size', 'department', 'max_classes_per_day')
 
 @admin.register(Department)
 class DepartmentAdmin(admin.ModelAdmin):
@@ -25,6 +24,10 @@ class DepartmentAdmin(admin.ModelAdmin):
 
 @admin.register(GeneratedTimetable)
 class GeneratedTimetableAdmin(admin.ModelAdmin):
-    list_display = ('department', 'status', 'created_at')
+    list_display = ('department', 'variant_number', 'status', 'created_at')
+
+@admin.register(PinnedSlot)
+class PinnedSlotAdmin(admin.ModelAdmin):
+    list_display = ('subject', 'department', 'day', 'slot_index')
 
 admin.site.register(TimetableSlot)

@@ -122,3 +122,12 @@ STATIC_URL = 'static/'
 
 # CORS CONFIGURATION
 CORS_ALLOW_ALL_ORIGINS = True
+
+# REST FRAMEWORK
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+}
+
