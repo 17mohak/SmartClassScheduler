@@ -1,5 +1,6 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import api_view, permission_classes, action
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
@@ -147,10 +148,8 @@ class TeacherUnavailabilityViewSet(BaseViewSet):
             try:
                 teacher = Teacher.objects.get(user=self.request.user)
                 if serializer.validated_data.get('teacher') != teacher:
-                    from rest_framework.exceptions import PermissionDenied
                     raise PermissionDenied("You can only set your own availability.")
             except Teacher.DoesNotExist:
-                from rest_framework.exceptions import PermissionDenied
                 raise PermissionDenied("No teacher profile found.")
         serializer.save()
 
@@ -183,17 +182,14 @@ class LeaveApplicationViewSet(viewsets.ModelViewSet):
             try:
                 teacher = Teacher.objects.get(user=self.request.user)
                 if serializer.validated_data.get('teacher') != teacher:
-                    from rest_framework.exceptions import PermissionDenied
                     raise PermissionDenied("You can only apply for your own leave.")
             except Teacher.DoesNotExist:
-                from rest_framework.exceptions import PermissionDenied
                 raise PermissionDenied("No teacher profile found.")
         serializer.save()
 
     def perform_update(self, serializer):
         # Only admins can update (approve/decline) leave applications
         if not self.request.user.is_staff:
-            from rest_framework.exceptions import PermissionDenied
             raise PermissionDenied("Only admins can update leave applications.")
         serializer.save()
 
@@ -201,15 +197,12 @@ class LeaveApplicationViewSet(viewsets.ModelViewSet):
         # Teachers can delete their own PENDING leaves; admins can delete any
         if not self.request.user.is_staff:
             if instance.status != 'PENDING':
-                from rest_framework.exceptions import PermissionDenied
                 raise PermissionDenied("You can only cancel pending leave applications.")
             try:
                 teacher = Teacher.objects.get(user=self.request.user)
                 if instance.teacher != teacher:
-                    from rest_framework.exceptions import PermissionDenied
                     raise PermissionDenied("You can only cancel your own leave applications.")
             except Teacher.DoesNotExist:
-                from rest_framework.exceptions import PermissionDenied
                 raise PermissionDenied("No teacher profile found.")
         instance.delete()
 
