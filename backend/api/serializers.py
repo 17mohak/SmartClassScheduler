@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Room, Teacher, Subject, StudentBatch, Department, GeneratedTimetable, TimetableSlot, PinnedSlot, TeacherUnavailability
+from .models import Room, Teacher, Subject, StudentBatch, Department, GeneratedTimetable, TimetableSlot, PinnedSlot, TeacherUnavailability, LeaveApplication
 
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:
@@ -74,3 +74,11 @@ class TeacherUnavailabilitySerializer(serializers.ModelSerializer):
     class Meta:
         model = TeacherUnavailability
         fields = '__all__'
+
+class LeaveApplicationSerializer(serializers.ModelSerializer):
+    teacher_name = serializers.CharField(source='teacher.name', read_only=True)
+
+    class Meta:
+        model = LeaveApplication
+        fields = '__all__'
+        read_only_fields = ['status', 'admin_remarks', 'created_at', 'updated_at']

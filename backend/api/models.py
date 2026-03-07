@@ -46,6 +46,32 @@ class TeacherUnavailability(models.Model):
     def __str__(self): return f"{self.teacher.name} unavailable {self.day} slot {self.slot_index}"
 
 
+# 3c. LeaveApplication (Teacher leave requests with admin approval)
+class LeaveApplication(models.Model):
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('APPROVED', 'Approved'),
+        ('DECLINED', 'Declined'),
+    ]
+    DAY_CHOICES = [('MON', 'Monday'), ('TUE', 'Tuesday'), ('WED', 'Wednesday'), ('THU', 'Thursday'), ('FRI', 'Friday')]
+
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='leave_applications')
+    day = models.CharField(max_length=3, choices=DAY_CHOICES)
+    slot_index = models.IntegerField(help_text="0-7 corresponding to time slots, or -1 for full day")
+    reason = models.TextField(blank=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDING')
+    admin_remarks = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        slot_desc = f"slot {self.slot_index}" if self.slot_index >= 0 else "full day"
+        return f"{self.teacher.name} - {self.day} {slot_desc} ({self.status})"
+
+
 # 4. Subject (Depends on Department, Batch, Teacher)
 class Subject(models.Model):
     name = models.CharField(max_length=100)
