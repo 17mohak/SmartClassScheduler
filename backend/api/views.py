@@ -1,5 +1,5 @@
 from rest_framework import viewsets, permissions, status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
@@ -60,6 +60,25 @@ class IsAdminOrReadOnly(permissions.BasePermission):
         return request.user and request.user.is_staff
 
 
+class IsOwnerTeacherOrAdmin(permissions.BasePermission):
+    """Allow teachers to manage their own records, admins can manage all."""
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return request.user and request.user.is_authenticated
+        if request.user and request.user.is_staff:
+            return True
+        if request.user and request.user.is_authenticated:
+            return True
+        return False
+
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_staff:
+            return True
+        if hasattr(obj, 'teacher') and hasattr(obj.teacher, 'user'):
+            return obj.teacher.user == request.user
+        return False
+
+
 class BaseViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
@@ -110,7 +129,7 @@ class PinnedSlotViewSet(BaseViewSet):
 class TeacherUnavailabilityViewSet(BaseViewSet):
     queryset = TeacherUnavailability.objects.all()
     serializer_class = TeacherUnavailabilitySerializer
-    permission_classes = [IsAdminOrReadOnly]
+    permission_classes = [IsOwnerTeacherOrAdmin]
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -121,6 +140,78 @@ class TeacherUnavailabilityViewSet(BaseViewSet):
         if dept:
             qs = qs.filter(teacher__department_id=dept)
         return qs
+
+    def perform_create(self, serializer):
+        # Teachers can only create unavailability for themselves
+        if not self.request.user.is_staff:
+            try:
+                teacher = Teacher.objects.get(user=self.request.user)
+                if serializer.validated_data.get('teacher') != teacher:
+                    from rest_framework.exceptions import PermissionDenied
+                    raise PermissionDenied("You can only set your own availability.")
+            except Teacher.DoesNotExist:
+                from rest_framework.exceptions import PermissionDenied
+                raise PermissionDenied("No teacher profile found.")
+        serializer.save()
+
+
+class LeaveApplicationViewSet(viewsets.ModelViewSet):
+    queryset = LeaveApplication.objects.all()
+    serializer_class = LeaveApplicationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        # Teachers can only see their own leave applications
+        if not self.request.user.is_staff:
+            try:
+                teacher = Teacher.objects.get(user=self.request.user)
+                qs = qs.filter(teacher=teacher)
+            except Teacher.DoesNotExist:
+                qs = qs.none()
+        teacher = self.request.query_params.get('teacher')
+        if teacher:
+            qs = qs.filter(teacher_id=teacher)
+        status_filter = self.request.query_params.get('status')
+        if status_filter:
+            qs = qs.filter(status=status_filter)
+        return qs
+
+    def perform_create(self, serializer):
+        # Teachers can only create leave for themselves
+        if not self.request.user.is_staff:
+            try:
+                teacher = Teacher.objects.get(user=self.request.user)
+                if serializer.validated_data.get('teacher') != teacher:
+                    from rest_framework.exceptions import PermissionDenied
+                    raise PermissionDenied("You can only apply for your own leave.")
+            except Teacher.DoesNotExist:
+                from rest_framework.exceptions import PermissionDenied
+                raise PermissionDenied("No teacher profile found.")
+        serializer.save()
+
+    def perform_update(self, serializer):
+        # Only admins can update (approve/decline) leave applications
+        if not self.request.user.is_staff:
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("Only admins can update leave applications.")
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        # Teachers can delete their own PENDING leaves; admins can delete any
+        if not self.request.user.is_staff:
+            if instance.status != 'PENDING':
+                from rest_framework.exceptions import PermissionDenied
+                raise PermissionDenied("You can only cancel pending leave applications.")
+            try:
+                teacher = Teacher.objects.get(user=self.request.user)
+                if instance.teacher != teacher:
+                    from rest_framework.exceptions import PermissionDenied
+                    raise PermissionDenied("You can only cancel your own leave applications.")
+            except Teacher.DoesNotExist:
+                from rest_framework.exceptions import PermissionDenied
+                raise PermissionDenied("No teacher profile found.")
+        instance.delete()
 
 
 class GeneratedTimetableViewSet(viewsets.ModelViewSet):
@@ -241,6 +332,77 @@ def detect_conflicts(request, pk):
                 })
 
     return Response({"conflicts": conflicts})
+
+
+# --- LEAVE APPLICATION APPROVE/DECLINE ---
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def approve_leave(request, pk):
+    if not request.user.is_staff:
+        return Response({"error": "Only admins can approve leave applications"}, status=403)
+
+    try:
+        leave = LeaveApplication.objects.get(id=pk)
+    except LeaveApplication.DoesNotExist:
+        return Response({"error": "Leave application not found"}, status=404)
+
+    if leave.status != 'PENDING':
+        return Response({"error": f"Leave application is already {leave.status}"}, status=400)
+
+    admin_remarks = request.data.get('admin_remarks', '')
+    leave.status = 'APPROVED'
+    leave.admin_remarks = admin_remarks
+    leave.save()
+
+    # Create TeacherUnavailability records for the approved leave
+    if leave.slot_index == -1:
+        # Full day leave - create unavailability for all slots
+        for slot_idx in range(8):
+            TeacherUnavailability.objects.get_or_create(
+                teacher=leave.teacher,
+                day=leave.day,
+                slot_index=slot_idx
+            )
+    else:
+        TeacherUnavailability.objects.get_or_create(
+            teacher=leave.teacher,
+            day=leave.day,
+            slot_index=leave.slot_index
+        )
+
+    return Response({
+        "status": "success",
+        "message": f"Leave approved for {leave.teacher.name} on {leave.day}",
+        "leave": LeaveApplicationSerializer(leave).data
+    })
+
+
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def decline_leave(request, pk):
+    if not request.user.is_staff:
+        return Response({"error": "Only admins can decline leave applications"}, status=403)
+
+    try:
+        leave = LeaveApplication.objects.get(id=pk)
+    except LeaveApplication.DoesNotExist:
+        return Response({"error": "Leave application not found"}, status=404)
+
+    if leave.status != 'PENDING':
+        return Response({"error": f"Leave application is already {leave.status}"}, status=400)
+
+    admin_remarks = request.data.get('admin_remarks', '')
+    leave.status = 'DECLINED'
+    leave.admin_remarks = admin_remarks
+    leave.save()
+
+    return Response({
+        "status": "success",
+        "message": f"Leave declined for {leave.teacher.name} on {leave.day}",
+        "leave": LeaveApplicationSerializer(leave).data
+    })
 
 
 # --- GENERATION TRIGGER ---

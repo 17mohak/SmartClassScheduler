@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Room, Teacher, Subject, StudentBatch, Department, GeneratedTimetable, TimetableSlot, PinnedSlot
+from .models import Room, Teacher, Subject, StudentBatch, Department, GeneratedTimetable, TimetableSlot, PinnedSlot, LeaveApplication
 
 
 @admin.register(Room)
@@ -29,5 +29,11 @@ class GeneratedTimetableAdmin(admin.ModelAdmin):
 @admin.register(PinnedSlot)
 class PinnedSlotAdmin(admin.ModelAdmin):
     list_display = ('subject', 'department', 'day', 'slot_index')
+
+@admin.register(LeaveApplication)
+class LeaveApplicationAdmin(admin.ModelAdmin):
+    list_display = ('teacher', 'day', 'slot_index', 'status', 'created_at')
+    list_filter = ('status', 'day')
+    search_fields = ('teacher__name', 'reason')
 
 admin.site.register(TimetableSlot)
