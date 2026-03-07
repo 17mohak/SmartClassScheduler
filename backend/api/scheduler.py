@@ -1,5 +1,5 @@
 from ortools.sat.python import cp_model
-from .models import Room, Teacher, Subject, StudentBatch, TimetableSlot, GeneratedTimetable, Department, PinnedSlot
+from .models import Room, Teacher, Subject, StudentBatch, TimetableSlot, GeneratedTimetable, Department, PinnedSlot, TeacherUnavailability
 
 
 DAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI']
@@ -52,7 +52,7 @@ def run_diagnostics(department_id, batches, subjects, teachers, rooms):
     return issues
 
 
-def _build_and_solve(department_id, batches, subjects, teachers, rooms, pinned_slots, variant_seed, variant_weight):
+def _build_and_solve(department_id, batches, subjects, teachers, rooms, pinned_slots, unavailability_set, variant_seed, variant_weight):
     """Build and solve a single CP-SAT model. Returns (status_str, slot_data_list, diagnostics_list)."""
     model = cp_model.CpModel()
 
@@ -90,6 +90,8 @@ def _build_and_solve(department_id, batches, subjects, teachers, rooms, pinned_s
             for d_idx, day in enumerate(DAYS):
                 for slot in range(SLOTS_PER_DAY):
                     if slot < t.preferred_start_slot or slot >= t.preferred_end_slot:
+                        continue
+                    if (t.id, day, slot) in unavailability_set:
                         continue
                     key = (t.id, s.id, target_batch.id, r.id, day, slot)
                     shifts[key] = model.NewBoolVar(f'shift_{key}')
@@ -287,6 +289,8 @@ def generate_timetable(department_id, num_variants=3):
     teachers = list(Teacher.objects.filter(department_id=department_id))
     rooms = list(Room.objects.all())
     pinned_slots = list(PinnedSlot.objects.filter(department_id=department_id))
+    unavailabilities = list(TeacherUnavailability.objects.filter(teacher__department_id=department_id))
+    unavailability_set = set((u.teacher_id, u.day, u.slot_index) for u in unavailabilities)
 
     if not teachers or not subjects or not batches:
         return {
@@ -314,7 +318,7 @@ def generate_timetable(department_id, num_variants=3):
     for i in range(min(num_variants, len(variant_configs))):
         cfg = variant_configs[i]
         status, slot_data, _ = _build_and_solve(
-            department_id, batches, subjects, teachers, rooms, pinned_slots,
+            department_id, batches, subjects, teachers, rooms, pinned_slots, unavailability_set,
             variant_seed=cfg['seed'], variant_weight=cfg['weight']
         )
 

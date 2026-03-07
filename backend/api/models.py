@@ -33,6 +33,19 @@ class Teacher(models.Model):
     def __str__(self): return self.name
 
 
+# 3b. TeacherUnavailability (Day+slot blocks)
+class TeacherUnavailability(models.Model):
+    DAY_CHOICES = [('MON', 'Monday'), ('TUE', 'Tuesday'), ('WED', 'Wednesday'), ('THU', 'Thursday'), ('FRI', 'Friday')]
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='unavailabilities')
+    day = models.CharField(max_length=3, choices=DAY_CHOICES)
+    slot_index = models.IntegerField(help_text="0-7 corresponding to time slots")
+
+    class Meta:
+        unique_together = ('teacher', 'day', 'slot_index')
+
+    def __str__(self): return f"{self.teacher.name} unavailable {self.day} slot {self.slot_index}"
+
+
 # 4. Subject (Depends on Department, Batch, Teacher)
 class Subject(models.Model):
     name = models.CharField(max_length=100)

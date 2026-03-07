@@ -386,6 +386,18 @@
             animation: drop-flash 0.6s ease-out forwards;
         }
 
+        @keyframes conflict-pulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 12px 2px rgba(239, 68, 68, 0.4);
+            }
+        }
+
         /* ── Light Mode ── */
         body.light-mode {
             background-color: #f1f5f9;
@@ -1117,7 +1129,7 @@
 
         // ═══ APP CONTROLLER ═══
         const app = {
-            state: { subjects: [], teachers: [], batches: [], currentDept: null, currentBatch: null, variants: [], currentVariant: null, pins: [] },
+            state: { subjects: [], teachers: [], batches: [], currentDept: null, currentBatch: null, variants: [], currentVariant: null, pins: [], conflicts: [], unavailabilities: [] },
             activeTab: 'subjects',
 
             render: (pageId) => {
@@ -1262,6 +1274,16 @@
                         statusEl.className = 'text-[10px] font-mono text-atlas-teal bg-atlas-teal/[0.06] px-3 py-1.5 rounded-full border border-atlas-teal/15 tracking-wider';
                     }
                 } catch (err) { console.error('Refresh timetable error:', err); }
+
+                // Fetch conflicts
+                if (app.state.currentVariant) {
+                    try {
+                        const cRes = await fetch(`${API_URL}/timetables/${app.state.currentVariant}/conflicts/`, { headers: { 'Authorization': `Token ${auth.token}` } });
+                        const cData = await cRes.json();
+                        app.state.conflicts = cData.conflicts || [];
+                        if (app.state.conflicts.length > 0) app.highlightConflicts();
+                    } catch (e) { app.state.conflicts = []; }
+                } else { app.state.conflicts = []; }
             },
 
             refreshData: async () => {
@@ -1342,7 +1364,10 @@
                             <div class="glass p-3.5 rounded-xl border-l-2 border-purple-500/50 mb-2 hover:bg-white/[0.02] transition-all duration-300 hover:border-purple-400">
                                 <div class="flex justify-between mb-2">
                                     <span class="font-bold text-white text-sm">${t.name}</span>
-                                    <button onclick="app.deleteItem('teachers', ${t.id})" class="text-slate-700 hover:text-red-400 transition-colors text-xs"><i class="fas fa-trash"></i></button>
+                                    <div class="flex items-center gap-2">
+                                        <button onclick="app.openAvailabilityGrid(${t.id})" class="text-slate-600 hover:text-emerald-400 transition-colors text-xs" title="Availability Grid"><i class="fas fa-calendar-alt"></i></button>
+                                        <button onclick="app.deleteItem('teachers', ${t.id})" class="text-slate-700 hover:text-red-400 transition-colors text-xs"><i class="fas fa-trash"></i></button>
+                                    </div>
                                 </div>
                                 <div class="flex gap-2 items-center text-xs mb-2">
                                     <span class="text-slate-500 font-bold text-[10px] tracking-wider">AVAIL:</span>
@@ -1414,6 +1439,11 @@
                                         <span class="bg-black/20 px-1.5 py-0.5 rounded text-[9px] truncate max-w-[80px]">${shortBatch}</span>
                                     </div>
                                 </div>`;
+                                // Check for conflicts on this tile
+                                const conflictSlotIds = (app.state.conflicts || []).flatMap(c => c.slot_ids);
+                                if (conflictSlotIds.includes(cell.id)) {
+                                    // We'll highlight after render
+                                }
                             });
                             html += `</div>`;
                         }
@@ -1669,6 +1699,256 @@
                 }).join('');
             },
 
+
+            // ═══ CONFLICT HIGHLIGHTING ═══
+            highlightConflicts: () => {
+                const conflictSlotIds = new Set(app.state.conflicts.flatMap(c => c.slot_ids));
+                const conflictDetails = {};
+                app.state.conflicts.forEach(c => { c.slot_ids.forEach(id => { conflictDetails[id] = (conflictDetails[id] || []).concat(c.detail); }); });
+                document.querySelectorAll('.tt-tile').forEach(tile => {
+                    const id = parseInt(tile.dataset.slotId);
+                    if (conflictSlotIds.has(id)) {
+                        tile.style.border = '2px solid rgba(239,68,68,0.7)';
+                        tile.style.animation = 'conflict-pulse 2s ease-in-out infinite';
+                        const badge = document.createElement('div');
+                        badge.className = 'text-[9px] text-red-400 mt-1';
+                        badge.title = conflictDetails[id]?.join('\n') || 'Conflict';
+                        badge.innerHTML = `<i class="fas fa-exclamation-triangle mr-1"></i>${conflictDetails[id]?.[0] || 'Conflict'}`;
+                        tile.appendChild(badge);
+                    }
+                });
+            },
+
+            // ═══ DEPARTMENT MANAGEMENT ═══
+            openDeptManager: async () => {
+                let depts = [];
+                try {
+                    const res = await fetch(`${API_URL}/departments/`, { headers: { 'Authorization': `Token ${auth.token}` } });
+                    depts = await res.json();
+                } catch (e) { return alert('Failed to load departments'); }
+
+                const modal = document.getElementById('diag-modal');
+                modal.classList.remove('hidden');
+                gsap.from("#diag-modal > div", { y: 30, opacity: 0, scale: 0.95, duration: 0.4, ease: "back.out(1.4)" });
+                document.getElementById('diag-title').textContent = 'Department Manager';
+                const body = document.getElementById('diag-body');
+                body.innerHTML = depts.map(d => `
+                    <div class="glass p-3 rounded-xl border-l-2 border-atlas-teal/50 flex items-center justify-between" id="dept-row-${d.id}">
+                        <input type="text" value="${d.name}" class="bg-transparent text-sm font-bold text-white outline-none flex-grow dept-name-input" data-id="${d.id}"
+                            onblur="app.renameDept(${d.id}, this.value)">
+                        <button onclick="app.deleteDept(${d.id})" class="text-slate-600 hover:text-red-400 transition-colors text-xs ml-2"><i class="fas fa-trash"></i></button>
+                    </div>
+                `).join('') + `
+                    <div class="flex gap-2 mt-3">
+                        <input type="text" id="new-dept-name" class="custom-input text-sm flex-grow" placeholder="New department name">
+                        <button onclick="app.addDept()" class="btn-primary px-4 py-2 rounded-xl text-xs text-white font-bold">Add</button>
+                    </div>
+                `;
+            },
+
+            addDept: async () => {
+                const name = document.getElementById('new-dept-name')?.value?.trim();
+                if (!name) return alert('Enter a name');
+                try {
+                    await fetch(`${API_URL}/departments/`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Token ${auth.token}` }, body: JSON.stringify({ name }) });
+                    app.openDeptManager();
+                    // Refresh dept dropdown
+                    const res = await fetch(`${API_URL}/departments/`, { headers: { 'Authorization': `Token ${auth.token}` } });
+                    const depts = await res.json();
+                    const sel = document.getElementById('dept-select');
+                    const prev = sel.value;
+                    sel.innerHTML = '<option value="" disabled>Select Department</option>';
+                    depts.forEach(d => sel.innerHTML += `<option value="${d.id}" ${d.id == prev ? 'selected' : ''}>${d.name}</option>`);
+                } catch (e) { alert('Error adding department'); }
+            },
+
+            renameDept: async (id, name) => {
+                if (!name.trim()) return;
+                try {
+                    await fetch(`${API_URL}/departments/${id}/`, { method: 'PATCH', headers: { 'Content-Type': 'application/json', 'Authorization': `Token ${auth.token}` }, body: JSON.stringify({ name: name.trim() }) });
+                    const res = await fetch(`${API_URL}/departments/`, { headers: { 'Authorization': `Token ${auth.token}` } });
+                    const depts = await res.json();
+                    const sel = document.getElementById('dept-select');
+                    const prev = sel.value;
+                    sel.innerHTML = '<option value="" disabled>Select Department</option>';
+                    depts.forEach(d => sel.innerHTML += `<option value="${d.id}" ${d.id == prev ? 'selected' : ''}>${d.name}</option>`);
+                } catch (e) { console.error('Rename failed', e); }
+            },
+
+            deleteDept: async (id) => {
+                if (!confirm('Delete this department and ALL its data?')) return;
+                try {
+                    await fetch(`${API_URL}/departments/${id}/`, { method: 'DELETE', headers: { 'Authorization': `Token ${auth.token}` } });
+                    app.openDeptManager();
+                    const res = await fetch(`${API_URL}/departments/`, { headers: { 'Authorization': `Token ${auth.token}` } });
+                    const depts = await res.json();
+                    const sel = document.getElementById('dept-select');
+                    sel.innerHTML = '<option value="" disabled selected>Select Department</option>';
+                    depts.forEach(d => sel.innerHTML += `<option value="${d.id}">${d.name}</option>`);
+                } catch (e) { alert('Error deleting department'); }
+            },
+
+            // ═══ BATCH HIERARCHY MANAGEMENT ═══
+            openBatchManager: () => {
+                if (!app.state.currentDept) return alert('Select a department first');
+                const allBatches = app.state.batches;
+                const parents = allBatches.filter(b => !b.parent_batch);
+                const modal = document.getElementById('diag-modal');
+                modal.classList.remove('hidden');
+                gsap.from("#diag-modal > div", { y: 30, opacity: 0, scale: 0.95, duration: 0.4, ease: "back.out(1.4)" });
+                document.getElementById('diag-title').textContent = 'Batch Hierarchy';
+                const body = document.getElementById('diag-body');
+
+                let html = '';
+                parents.forEach(p => {
+                    const subs = allBatches.filter(b => b.parent_batch == p.id);
+                    html += `
+                        <div class="glass p-3 rounded-xl border-l-2 border-atlas-teal/50 mb-2">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-users text-atlas-teal text-xs"></i>
+                                    <span class="font-bold text-white text-sm">${p.name}</span>
+                                    <span class="text-[10px] text-slate-500 bg-white/5 px-2 py-0.5 rounded-full">${p.size} students</span>
+                                </div>
+                                <button onclick="app.deleteBatch(${p.id})" class="text-slate-700 hover:text-red-400 transition-colors text-xs"><i class="fas fa-trash"></i></button>
+                            </div>
+                            ${subs.length > 0 ? `<div class="ml-5 mt-2 space-y-1 border-l border-white/10 pl-3">
+                                ${subs.map(s => `
+                                    <div class="flex items-center justify-between py-1">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-slate-600 text-xs">├─</span>
+                                            <span class="text-sm text-slate-300">${s.name}</span>
+                                            <span class="text-[9px] text-slate-500 bg-white/5 px-1.5 py-0.5 rounded">${s.size}</span>
+                                        </div>
+                                        <button onclick="app.deleteBatch(${s.id})" class="text-slate-700 hover:text-red-400 transition-colors text-xs"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                `).join('')}
+                            </div>` : ''}
+                        </div>
+                    `;
+                });
+
+                let parentOpts = '<option value="">— None (Top-level) —</option>';
+                parents.forEach(p => parentOpts += `<option value="${p.id}">Sub-batch of ${p.name}</option>`);
+
+                html += `
+                    <div class="glass p-3 rounded-xl mt-3 space-y-2">
+                        <div class="text-[10px] uppercase text-slate-500 font-bold tracking-wider">Add Batch</div>
+                        <input type="text" id="new-batch-name" class="custom-input text-sm" placeholder="Batch name">
+                        <div class="flex gap-2">
+                            <input type="number" id="new-batch-size" class="custom-input text-sm w-20" placeholder="Size" value="60">
+                            <select id="new-batch-parent" class="custom-input text-sm flex-grow">${parentOpts}</select>
+                        </div>
+                        <button onclick="app.addBatch()" class="w-full btn-primary py-2 rounded-xl text-xs text-white font-bold">Add Batch</button>
+                    </div>
+                `;
+                body.innerHTML = html;
+            },
+
+            addBatch: async () => {
+                const name = document.getElementById('new-batch-name')?.value?.trim();
+                const size = parseInt(document.getElementById('new-batch-size')?.value) || 60;
+                const parentBatch = document.getElementById('new-batch-parent')?.value || null;
+                if (!name) return alert('Enter a batch name');
+                try {
+                    await fetch(`${API_URL}/batches/`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Token ${auth.token}` },
+                        body: JSON.stringify({ name, size, department: app.state.currentDept, parent_batch: parentBatch || null, max_classes_per_day: 6 })
+                    });
+                    await app.refreshData();
+                    app.openBatchManager();
+                } catch (e) { alert('Error adding batch'); }
+            },
+
+            deleteBatch: async (id) => {
+                if (!confirm('Delete this batch?')) return;
+                try {
+                    await fetch(`${API_URL}/batches/${id}/`, { method: 'DELETE', headers: { 'Authorization': `Token ${auth.token}` } });
+                    await app.refreshData();
+                    app.openBatchManager();
+                } catch (e) { alert('Error deleting batch'); }
+            },
+
+            // ═══ TEACHER AVAILABILITY ═══
+            openAvailabilityGrid: async (teacherId) => {
+                const teacher = app.state.teachers.find(t => t.id == teacherId);
+                if (!teacher) return;
+
+                // Fetch current unavailabilities
+                let unavails = [];
+                try {
+                    const res = await fetch(`${API_URL}/teacher-unavailability/?teacher=${teacherId}`, { headers: { 'Authorization': `Token ${auth.token}` } });
+                    unavails = await res.json();
+                } catch (e) { console.error('Failed to load unavailabilities'); }
+
+                const unavailSet = new Set(unavails.map(u => `${u.day}_${u.slot_index}`));
+                const unavailMap = {};
+                unavails.forEach(u => { unavailMap[`${u.day}_${u.slot_index}`] = u.id; });
+
+                const days = ['MON', 'TUE', 'WED', 'THU', 'FRI'];
+                const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+
+                const modal = document.getElementById('diag-modal');
+                modal.classList.remove('hidden');
+                gsap.from("#diag-modal > div", { y: 30, opacity: 0, scale: 0.95, duration: 0.4, ease: "back.out(1.4)" });
+                document.getElementById('diag-title').textContent = `${teacher.name} — Availability`;
+                const body = document.getElementById('diag-body');
+
+                let gridHtml = `<div class="text-[10px] text-slate-500 mb-2">Click slots to toggle availability. <span class="text-green-400">Green = Available</span>, <span class="text-red-400">Red = Unavailable</span></div>`;
+                gridHtml += `<div class="overflow-x-auto"><table class="w-full text-center text-xs border-collapse">
+                    <thead><tr><th class="p-1.5 text-[10px] text-slate-500">Time</th>
+                    ${dayLabels.map(d => `<th class="p-1.5 text-[10px] text-slate-500">${d}</th>`).join('')}
+                    </tr></thead><tbody>`;
+
+                TIME_SLOTS.forEach((ts, slotIdx) => {
+                    gridHtml += `<tr>`;
+                    gridHtml += `<td class="p-1 text-[10px] text-slate-500 whitespace-nowrap">${ts.label}</td>`;
+                    days.forEach(day => {
+                        const key = `${day}_${slotIdx}`;
+                        const isUnavail = unavailSet.has(key);
+                        const bg = isUnavail ? 'bg-red-500/20 border-red-500/30' : 'bg-green-500/10 border-green-500/20';
+                        const icon = isUnavail ? '✕' : '✓';
+                        const iconColor = isUnavail ? 'text-red-400' : 'text-green-400';
+                        gridHtml += `<td class="p-0.5">
+                            <button onclick="app.toggleUnavailability(${teacherId}, '${day}', ${slotIdx}, this)"
+                                class="avail-btn w-full py-2 rounded-lg border ${bg} ${iconColor} text-xs font-bold transition-all hover:scale-105 cursor-pointer"
+                                data-unavail="${isUnavail}" data-record-id="${unavailMap[key] || ''}">${icon}</button>
+                        </td>`;
+                    });
+                    gridHtml += `</tr>`;
+                });
+                gridHtml += `</tbody></table></div>`;
+                body.innerHTML = gridHtml;
+            },
+
+            toggleUnavailability: async (teacherId, day, slotIndex, btn) => {
+                const isCurrentlyUnavail = btn.dataset.unavail === 'true';
+                try {
+                    if (isCurrentlyUnavail) {
+                        // Delete the record
+                        const recordId = btn.dataset.recordId;
+                        if (recordId) {
+                            await fetch(`${API_URL}/teacher-unavailability/${recordId}/`, { method: 'DELETE', headers: { 'Authorization': `Token ${auth.token}` } });
+                        }
+                        btn.dataset.unavail = 'false';
+                        btn.dataset.recordId = '';
+                        btn.className = 'avail-btn w-full py-2 rounded-lg border bg-green-500/10 border-green-500/20 text-green-400 text-xs font-bold transition-all hover:scale-105 cursor-pointer';
+                        btn.textContent = '✓';
+                    } else {
+                        // Create the record
+                        const res = await fetch(`${API_URL}/teacher-unavailability/`, {
+                            method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Token ${auth.token}` },
+                            body: JSON.stringify({ teacher: teacherId, day, slot_index: slotIndex })
+                        });
+                        const data = await res.json();
+                        btn.dataset.unavail = 'true';
+                        btn.dataset.recordId = data.id;
+                        btn.className = 'avail-btn w-full py-2 rounded-lg border bg-red-500/20 border-red-500/30 text-red-400 text-xs font-bold transition-all hover:scale-105 cursor-pointer';
+                        btn.textContent = '✕';
+                    }
+                } catch (e) { alert('Error toggling availability'); }
+            },
+
             // ═══ DRAG & DROP ═══
             handleDragStart: (e) => {
                 const tile = e.target.closest('.tt-tile');
@@ -1906,12 +2186,14 @@
                                     <span class="text-[10px] font-bold text-slate-500 px-2 tracking-wider">DEPT</span>
                                     <select id="dept-select" onchange="app.onDeptChange()" class="bg-transparent text-sm font-bold text-atlas-teal outline-none flex-grow cursor-pointer"><option>Loading...</option></select>
                                     <button onclick="app.refreshData()" class="w-7 h-7 rounded-lg glass flex items-center justify-center text-slate-500 hover:text-atlas-teal hover:border-atlas-teal/20 transition-all text-xs"><i class="fas fa-sync"></i></button>
+                                    <button onclick="app.openDeptManager()" class="w-7 h-7 rounded-lg glass flex items-center justify-center text-slate-500 hover:text-amber-400 hover:border-amber-400/20 transition-all text-xs" title="Manage Departments"><i class="fas fa-cog"></i></button>
                                 </div>
                                 <div class="flex items-center gap-2 mb-4 glass p-2.5 rounded-xl">
                                     <span class="text-[10px] font-bold text-slate-500 px-2 tracking-wider">BATCH</span>
                                     <select id="batch-select" onchange="app.onBatchChange()" class="bg-transparent text-sm font-bold text-atlas-teal outline-none flex-grow cursor-pointer">
                                         <option value="" disabled selected>Select Dept first</option>
                                     </select>
+                                    <button onclick="app.openBatchManager()" class="w-7 h-7 rounded-lg glass flex items-center justify-center text-slate-500 hover:text-emerald-400 hover:border-emerald-400/20 transition-all text-xs" title="Manage Batches"><i class="fas fa-sitemap"></i></button>
                                 </div>
                                 <div class="flex gap-2">
                                     <button onclick="app.activeTab='subjects';app.renderDataManager()" class="flex-1 py-2.5 text-sm font-bold bg-gradient-to-r from-atlas-teal to-atlas-indigo text-white rounded-lg shadow-lg shadow-atlas-teal/10 transition-all" id="btn-tab-sub">Subjects</button>

@@ -107,6 +107,22 @@ class PinnedSlotViewSet(BaseViewSet):
         return qs
 
 
+class TeacherUnavailabilityViewSet(BaseViewSet):
+    queryset = TeacherUnavailability.objects.all()
+    serializer_class = TeacherUnavailabilitySerializer
+    permission_classes = [IsAdminOrReadOnly]
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        teacher = self.request.query_params.get('teacher')
+        if teacher:
+            qs = qs.filter(teacher_id=teacher)
+        dept = self.request.query_params.get('department')
+        if dept:
+            qs = qs.filter(teacher__department_id=dept)
+        return qs
+
+
 class GeneratedTimetableViewSet(viewsets.ModelViewSet):
     queryset = GeneratedTimetable.objects.all()
     serializer_class = GeneratedTimetableSerializer
@@ -154,6 +170,77 @@ class TimetableSlotViewSet(viewsets.ModelViewSet):
         if teacher:
             qs = qs.filter(teacher_id=teacher)
         return qs
+
+
+# --- CONFLICT DETECTION ---
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def detect_conflicts(request, pk):
+    """Detect teacher/room/batch conflicts in a timetable."""
+    try:
+        tt = GeneratedTimetable.objects.get(id=pk)
+    except GeneratedTimetable.DoesNotExist:
+        return Response({"error": "Timetable not found"}, status=404)
+
+    slots = list(TimetableSlot.objects.filter(timetable=tt).select_related('teacher', 'room', 'batch', 'subject'))
+    conflicts = []
+
+    # Group slots by (day, start_time)
+    from collections import defaultdict
+    by_time = defaultdict(list)
+    for s in slots:
+        by_time[(s.day, s.start_time.strftime("%H:%M"))].append(s)
+
+    TIME_KEYS = ["07:30", "08:30", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00"]
+
+    for (day, time_key), cell_slots in by_time.items():
+        slot_idx = TIME_KEYS.index(time_key) if time_key in TIME_KEYS else -1
+
+        # Teacher clash
+        teacher_map = defaultdict(list)
+        for s in cell_slots:
+            teacher_map[s.teacher_id].append(s)
+        for tid, slist in teacher_map.items():
+            if len(slist) > 1:
+                conflicts.append({
+                    "type": "teacher",
+                    "day": day,
+                    "slot_index": slot_idx,
+                    "slot_ids": [s.id for s in slist],
+                    "detail": f"Teacher '{slist[0].teacher.name}' has {len(slist)} classes at the same time"
+                })
+
+        # Room clash
+        room_map = defaultdict(list)
+        for s in cell_slots:
+            room_map[s.room_id].append(s)
+        for rid, slist in room_map.items():
+            if len(slist) > 1:
+                conflicts.append({
+                    "type": "room",
+                    "day": day,
+                    "slot_index": slot_idx,
+                    "slot_ids": [s.id for s in slist],
+                    "detail": f"Room '{slist[0].room.name}' has {len(slist)} classes at the same time"
+                })
+
+        # Batch clash (same batch or parent overlap)
+        batch_map = defaultdict(list)
+        for s in cell_slots:
+            batch_map[s.batch_id].append(s)
+            if s.batch.parent_batch_id:
+                batch_map[f"parent_{s.batch.parent_batch_id}"].append(s)
+        for bid, slist in batch_map.items():
+            if isinstance(bid, int) and len(slist) > 1:
+                conflicts.append({
+                    "type": "batch",
+                    "day": day,
+                    "slot_index": slot_idx,
+                    "slot_ids": [s.id for s in slist],
+                    "detail": f"Batch '{slist[0].batch.name}' has {len(slist)} classes at the same time"
+                })
+
+    return Response({"conflicts": conflicts})
 
 
 # --- GENERATION TRIGGER ---
