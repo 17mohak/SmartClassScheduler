@@ -1,0 +1,3186 @@
+[
+{
+  "model": "admin.logentry",
+  "pk": 1,
+  "fields": {
+    "action_time": "2026-02-05T05:09:05.191Z",
+    "user": 1,
+    "content_type": 7,
+    "object_id": "1",
+    "object_repr": "uGDX",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2,
+  "fields": {
+    "action_time": "2026-02-05T05:09:07.860Z",
+    "user": 1,
+    "content_type": 7,
+    "object_id": "2",
+    "object_repr": "ISME",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 3,
+  "fields": {
+    "action_time": "2026-02-05T05:09:10.731Z",
+    "user": 1,
+    "content_type": 7,
+    "object_id": "3",
+    "object_repr": "ISDI",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 4,
+  "fields": {
+    "action_time": "2026-02-05T05:09:14.167Z",
+    "user": 1,
+    "content_type": 7,
+    "object_id": "4",
+    "object_repr": "LAW",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 5,
+  "fields": {
+    "action_time": "2026-02-05T05:09:45.328Z",
+    "user": 1,
+    "content_type": 10,
+    "object_id": "1",
+    "object_repr": "SY Voyagers",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 6,
+  "fields": {
+    "action_time": "2026-02-05T05:09:52.815Z",
+    "user": 1,
+    "content_type": 10,
+    "object_id": "2",
+    "object_repr": "SY Hadoop",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 7,
+  "fields": {
+    "action_time": "2026-02-05T05:12:14.669Z",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "2",
+    "object_repr": "yogeshj",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 8,
+  "fields": {
+    "action_time": "2026-02-05T07:24:48.716Z",
+    "user": 1,
+    "content_type": 12,
+    "object_id": "1",
+    "object_repr": "Yogesh Jadhav",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$DlyLlaKlRE3s5dU70DjAxt$RsVvTzA7Eo0CSZcxD/Nav7YKWxfCMVnBswFc35cHyfY=",
+    "last_login": "2026-02-09T06:13:26.202Z",
+    "is_superuser": true,
+    "username": "mohak",
+    "first_name": "",
+    "last_name": "",
+    "email": "mohak2k6@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-02-05T02:41:23.737Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 10,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$33HbTB1FCZTjHvMfLnok5d$5EX0lpjEhn5kBogRBop5EEuS5mSMM/Rqa0lanBDed+k=",
+    "last_login": null,
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "admin@university.edu",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-02-26T05:04:19.767Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 55,
+  "fields": {
+    "password": "pbkdf2_sha256$870000$2UkO6v86ry0xkZVqjaoppW$ynzy+WvceHpwojk5s31z1Ms7LRM0Y7MmN++LdxLqxSA=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "sohel.das",
+    "first_name": "",
+    "last_name": "",
+    "email": "sohel.das@university.edu",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-02-27T03:38:00.694Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 56,
+  "fields": {
+    "password": "pbkdf2_sha256$870000$7UTtUPtsVBoTQHHAc9W95k$5u03vsSm6IoGMup7NxkoJ/Gwe14uvjPX0h9tqNmy5t8=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "shashikant.patil",
+    "first_name": "",
+    "last_name": "",
+    "email": "shashikant.patil@university.edu",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-02-27T03:38:01.267Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 57,
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$VD0xQCXcfVww1X2VTjGWGd$6Mt0OOpSOvokLkyybvSlVD1RKz1gRDPiA0cC2/Q3jhM=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "yogesh.jadhav",
+    "first_name": "",
+    "last_name": "",
+    "email": "yogesh.jadhav@university.edu",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-02-27T03:38:01.885Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 58,
+  "fields": {
+    "password": "pbkdf2_sha256$870000$lyO99cMG06A3sWJn8gTOrC$1Ua0XKm6Xnv5LegQl/CZVr1UHtUazhOn1q1ljdlQiuM=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "nimesh.bumb",
+    "first_name": "",
+    "last_name": "",
+    "email": "nimesh.bumb@university.edu",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-02-27T03:38:02.602Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 59,
+  "fields": {
+    "password": "pbkdf2_sha256$870000$Ws6IRIxIkcDXk3SOEDluFy$gHdryeU15q7R5aVZBZ1Atd7XJnbl+s/5RcSq/8kkRnc=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "sujatha.ayyengar",
+    "first_name": "",
+    "last_name": "",
+    "email": "sujatha.ayyengar@university.edu",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-02-27T03:38:03.162Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 60,
+  "fields": {
+    "password": "pbkdf2_sha256$870000$LC7LOd1oWwaSoRJUZBZHSX$eSvqR9AhWh6MFAO/zfvMpzdyp945H53XVqIKTZ3GhLk=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "kunal.meher",
+    "first_name": "",
+    "last_name": "",
+    "email": "kunal.meher@university.edu",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-02-27T03:38:03.735Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 61,
+  "fields": {
+    "password": "pbkdf2_sha256$870000$2eeJpjZLvwgl1dpNboc8Of$55cZ0l9x27aht+CVSDkkMGdw4o2eC30/1D1uJEKuowI=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "firoz.shaikh",
+    "first_name": "",
+    "last_name": "",
+    "email": "firoz.shaikh@university.edu",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-02-27T03:38:04.366Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 62,
+  "fields": {
+    "password": "pbkdf2_sha256$870000$Da6SO1FHmliGCnS2NJAXIM$JjR4qBjXud+OJaslHBKvQC9Gwz9rjbg7pT3Gro6oNSA=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "elective.faculty1",
+    "first_name": "",
+    "last_name": "",
+    "email": "elective.faculty1@university.edu",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-02-27T03:38:04.896Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 63,
+  "fields": {
+    "password": "pbkdf2_sha256$870000$mU7vsbXxvppVKRfNNQH8ZM$/HOF74VzJegGlIlQ/z752tFsHkzEJN6gaAoOKICLmUk=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "elective.faculty2",
+    "first_name": "",
+    "last_name": "",
+    "email": "elective.faculty2@university.edu",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-02-27T03:38:05.489Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "jgkx9h5mhjs2tjicmbzkxmn730k8icw6",
+  "fields": {
+    "session_data": ".eJxVjMsOwiAQRf-FtSG8EZfu_QYyA4xUDSSlXRn_3TbpQrf3nHPfLMK61LiOMscpswuT7PS7IaRnaTvID2j3zlNvyzwh3xV-0MFvPZfX9XD_DiqMutXaoXJC6gxkiYIMSpREoRhvvSUjkgnGS62T9xtQ4KzxgjBJi_qMktjnC9BoN3I:1vpKWU:fIv2A-6efid1-Tomv3x4Myl0Kipy3IuCBj2Y1klEy78",
+    "expire_date": "2026-02-23T06:13:26.217Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "opb7bl007sbv4gwv91gv91hubmqph8q2",
+  "fields": {
+    "session_data": ".eJxVjMsOwiAQRf-FtSG8EZfu_QYyA4xUDSSlXRn_3TbpQrf3nHPfLMK61LiOMscpswuT7PS7IaRnaTvID2j3zlNvyzwh3xV-0MFvPZfX9XD_DiqMutXaoXJC6gxkiYIMSpREoRhvvSUjkgnGS62T9xtQ4KzxgjBJi_qMktjnC9BoN3I:1vnraw:HNqqzADMWPhVNEgzik8d3BnluoXIkn-fX_4l0ENHzAU",
+    "expire_date": "2026-02-19T05:07:58.034Z"
+  }
+},
+{
+  "model": "api.department",
+  "pk": 12,
+  "fields": {
+    "name": "uGDX"
+  }
+},
+{
+  "model": "api.department",
+  "pk": 13,
+  "fields": {
+    "name": "ISME"
+  }
+},
+{
+  "model": "api.department",
+  "pk": 14,
+  "fields": {
+    "name": "ISDI"
+  }
+},
+{
+  "model": "api.department",
+  "pk": 15,
+  "fields": {
+    "name": "LAW"
+  }
+},
+{
+  "model": "api.studentbatch",
+  "pk": 40,
+  "fields": {
+    "name": "SY Voyagers",
+    "size": 60,
+    "department": 12,
+    "parent_batch": null,
+    "max_classes_per_day": 6
+  }
+},
+{
+  "model": "api.studentbatch",
+  "pk": 41,
+  "fields": {
+    "name": "SY Hadoop",
+    "size": 60,
+    "department": 12,
+    "parent_batch": null,
+    "max_classes_per_day": 6
+  }
+},
+{
+  "model": "api.studentbatch",
+  "pk": 42,
+  "fields": {
+    "name": "SY Voyagers - Lab A",
+    "size": 30,
+    "department": 12,
+    "parent_batch": 40,
+    "max_classes_per_day": 6
+  }
+},
+{
+  "model": "api.studentbatch",
+  "pk": 43,
+  "fields": {
+    "name": "SY Voyagers - Lab B",
+    "size": 30,
+    "department": 12,
+    "parent_batch": 40,
+    "max_classes_per_day": 6
+  }
+},
+{
+  "model": "api.studentbatch",
+  "pk": 44,
+  "fields": {
+    "name": "SY Hadoop - Lab A",
+    "size": 30,
+    "department": 12,
+    "parent_batch": 41,
+    "max_classes_per_day": 6
+  }
+},
+{
+  "model": "api.studentbatch",
+  "pk": 45,
+  "fields": {
+    "name": "SY Hadoop - Lab B",
+    "size": 30,
+    "department": 12,
+    "parent_batch": 41,
+    "max_classes_per_day": 6
+  }
+},
+{
+  "model": "api.studentbatch",
+  "pk": 46,
+  "fields": {
+    "name": "BBA",
+    "size": 120,
+    "department": 13,
+    "parent_batch": null,
+    "max_classes_per_day": 6
+  }
+},
+{
+  "model": "api.studentbatch",
+  "pk": 47,
+  "fields": {
+    "name": "BSc FInance",
+    "size": 120,
+    "department": 13,
+    "parent_batch": null,
+    "max_classes_per_day": 6
+  }
+},
+{
+  "model": "api.studentbatch",
+  "pk": 48,
+  "fields": {
+    "name": "Economics",
+    "size": 60,
+    "department": 13,
+    "parent_batch": 46,
+    "max_classes_per_day": 6
+  }
+},
+{
+  "model": "api.studentbatch",
+  "pk": 49,
+  "fields": {
+    "name": "Finance",
+    "size": 60,
+    "department": 13,
+    "parent_batch": 46,
+    "max_classes_per_day": 6
+  }
+},
+{
+  "model": "api.teacher",
+  "pk": 53,
+  "fields": {
+    "user": 55,
+    "name": "Sohel Das",
+    "email": "sohel.das@university.edu",
+    "department": 12,
+    "preferred_start_slot": 0,
+    "preferred_end_slot": 8,
+    "max_classes_per_day": 4
+  }
+},
+{
+  "model": "api.teacher",
+  "pk": 54,
+  "fields": {
+    "user": 56,
+    "name": "Shashikant Patil",
+    "email": "shashikant.patil@university.edu",
+    "department": 12,
+    "preferred_start_slot": 0,
+    "preferred_end_slot": 8,
+    "max_classes_per_day": 4
+  }
+},
+{
+  "model": "api.teacher",
+  "pk": 55,
+  "fields": {
+    "user": 57,
+    "name": "Yogesh Jadhav",
+    "email": "yogesh.jadhav@university.edu",
+    "department": 12,
+    "preferred_start_slot": 0,
+    "preferred_end_slot": 8,
+    "max_classes_per_day": 4
+  }
+},
+{
+  "model": "api.teacher",
+  "pk": 56,
+  "fields": {
+    "user": 58,
+    "name": "Nimesh Bumb",
+    "email": "nimesh.bumb@university.edu",
+    "department": 12,
+    "preferred_start_slot": 0,
+    "preferred_end_slot": 8,
+    "max_classes_per_day": 4
+  }
+},
+{
+  "model": "api.teacher",
+  "pk": 57,
+  "fields": {
+    "user": 59,
+    "name": "Sujatha Ayyengar",
+    "email": "sujatha.ayyengar@university.edu",
+    "department": 12,
+    "preferred_start_slot": 0,
+    "preferred_end_slot": 8,
+    "max_classes_per_day": 4
+  }
+},
+{
+  "model": "api.teacher",
+  "pk": 58,
+  "fields": {
+    "user": 60,
+    "name": "Kunal Meher",
+    "email": "kunal.meher@university.edu",
+    "department": 12,
+    "preferred_start_slot": 0,
+    "preferred_end_slot": 8,
+    "max_classes_per_day": 4
+  }
+},
+{
+  "model": "api.teacher",
+  "pk": 59,
+  "fields": {
+    "user": 61,
+    "name": "Firoz Shaikh",
+    "email": "firoz.shaikh@university.edu",
+    "department": 12,
+    "preferred_start_slot": 0,
+    "preferred_end_slot": 8,
+    "max_classes_per_day": 4
+  }
+},
+{
+  "model": "api.teacher",
+  "pk": 60,
+  "fields": {
+    "user": 62,
+    "name": "Elective Faculty 1",
+    "email": "elective.faculty1@university.edu",
+    "department": 12,
+    "preferred_start_slot": 0,
+    "preferred_end_slot": 8,
+    "max_classes_per_day": 4
+  }
+},
+{
+  "model": "api.teacher",
+  "pk": 61,
+  "fields": {
+    "user": 63,
+    "name": "Elective Faculty 2",
+    "email": "elective.faculty2@university.edu",
+    "department": 12,
+    "preferred_start_slot": 0,
+    "preferred_end_slot": 8,
+    "max_classes_per_day": 4
+  }
+},
+{
+  "model": "api.subject",
+  "pk": 143,
+  "fields": {
+    "name": "Advanced Machine Learning",
+    "code": "AML501",
+    "weekly_lectures": 3,
+    "department": 12,
+    "batch": 40,
+    "teacher": 53
+  }
+},
+{
+  "model": "api.subject",
+  "pk": 144,
+  "fields": {
+    "name": "Advanced Machine Learning",
+    "code": "AML501",
+    "weekly_lectures": 3,
+    "department": 12,
+    "batch": 41,
+    "teacher": 53
+  }
+},
+{
+  "model": "api.subject",
+  "pk": 145,
+  "fields": {
+    "name": "Business Plan Writing",
+    "code": "BPW502",
+    "weekly_lectures": 3,
+    "department": 12,
+    "batch": 40,
+    "teacher": 54
+  }
+},
+{
+  "model": "api.subject",
+  "pk": 146,
+  "fields": {
+    "name": "Business Plan Writing",
+    "code": "BPW502",
+    "weekly_lectures": 3,
+    "department": 12,
+    "batch": 41,
+    "teacher": 54
+  }
+},
+{
+  "model": "api.subject",
+  "pk": 147,
+  "fields": {
+    "name": "Data Engineering Operations",
+    "code": "DEO503",
+    "weekly_lectures": 3,
+    "department": 12,
+    "batch": 40,
+    "teacher": 55
+  }
+},
+{
+  "model": "api.subject",
+  "pk": 148,
+  "fields": {
+    "name": "Data Engineering Operations",
+    "code": "DEO503",
+    "weekly_lectures": 3,
+    "department": 12,
+    "batch": 41,
+    "teacher": 55
+  }
+},
+{
+  "model": "api.subject",
+  "pk": 149,
+  "fields": {
+    "name": "Data Engineering Operations - Lab",
+    "code": "DEO503L",
+    "weekly_lectures": 1,
+    "department": 12,
+    "batch": 42,
+    "teacher": 55
+  }
+},
+{
+  "model": "api.subject",
+  "pk": 150,
+  "fields": {
+    "name": "Data Engineering Operations - Lab",
+    "code": "DEO503L",
+    "weekly_lectures": 1,
+    "department": 12,
+    "batch": 43,
+    "teacher": 55
+  }
+},
+{
+  "model": "api.subject",
+  "pk": 151,
+  "fields": {
+    "name": "Data Engineering Operations - Lab",
+    "code": "DEO503L",
+    "weekly_lectures": 1,
+    "department": 12,
+    "batch": 44,
+    "teacher": 55
+  }
+},
+{
+  "model": "api.subject",
+  "pk": 152,
+  "fields": {
+    "name": "Data Engineering Operations - Lab",
+    "code": "DEO503L",
+    "weekly_lectures": 1,
+    "department": 12,
+    "batch": 45,
+    "teacher": 55
+  }
+},
+{
+  "model": "api.subject",
+  "pk": 153,
+  "fields": {
+    "name": "Introduction to Algorithms",
+    "code": "ITA504",
+    "weekly_lectures": 3,
+    "department": 12,
+    "batch": 40,
+    "teacher": 56
+  }
+},
+{
+  "model": "api.subject",
+  "pk": 154,
+  "fields": {
+    "name": "Introduction to Algorithms",
+    "code": "ITA504",
+    "weekly_lectures": 3,
+    "department": 12,
+    "batch": 41,
+    "teacher": 56
+  }
+},
+{
+  "model": "api.subject",
+  "pk": 155,
+  "fields": {
+    "name": "Large-Scale Data Storage",
+    "code": "LDS505",
+    "weekly_lectures": 3,
+    "department": 12,
+    "batch": 40,
+    "teacher": 57
+  }
+},
+{
+  "model": "api.subject",
+  "pk": 156,
+  "fields": {
+    "name": "Large-Scale Data Storage",
+    "code": "LDS505",
+    "weekly_lectures": 3,
+    "department": 12,
+    "batch": 41,
+    "teacher": 57
+  }
+},
+{
+  "model": "api.subject",
+  "pk": 157,
+  "fields": {
+    "name": "DevOps and MLOps",
+    "code": "DOM506",
+    "weekly_lectures": 3,
+    "department": 12,
+    "batch": 40,
+    "teacher": 58
+  }
+},
+{
+  "model": "api.subject",
+  "pk": 158,
+  "fields": {
+    "name": "DevOps and MLOps",
+    "code": "DOM506",
+    "weekly_lectures": 3,
+    "department": 12,
+    "batch": 41,
+    "teacher": 58
+  }
+},
+{
+  "model": "api.subject",
+  "pk": 159,
+  "fields": {
+    "name": "DevOps and MLOps - Lab",
+    "code": "DOM506L",
+    "weekly_lectures": 1,
+    "department": 12,
+    "batch": 42,
+    "teacher": 58
+  }
+},
+{
+  "model": "api.subject",
+  "pk": 160,
+  "fields": {
+    "name": "DevOps and MLOps - Lab",
+    "code": "DOM506L",
+    "weekly_lectures": 1,
+    "department": 12,
+    "batch": 43,
+    "teacher": 58
+  }
+},
+{
+  "model": "api.subject",
+  "pk": 161,
+  "fields": {
+    "name": "DevOps and MLOps - Lab",
+    "code": "DOM506L",
+    "weekly_lectures": 1,
+    "department": 12,
+    "batch": 44,
+    "teacher": 58
+  }
+},
+{
+  "model": "api.subject",
+  "pk": 162,
+  "fields": {
+    "name": "DevOps and MLOps - Lab",
+    "code": "DOM506L",
+    "weekly_lectures": 1,
+    "department": 12,
+    "batch": 45,
+    "teacher": 58
+  }
+},
+{
+  "model": "api.subject",
+  "pk": 163,
+  "fields": {
+    "name": "Career Services",
+    "code": "CS507",
+    "weekly_lectures": 2,
+    "department": 12,
+    "batch": 40,
+    "teacher": 59
+  }
+},
+{
+  "model": "api.subject",
+  "pk": 164,
+  "fields": {
+    "name": "Career Services",
+    "code": "CS507",
+    "weekly_lectures": 2,
+    "department": 12,
+    "batch": 41,
+    "teacher": 59
+  }
+},
+{
+  "model": "api.subject",
+  "pk": 165,
+  "fields": {
+    "name": "Elective",
+    "code": "ELEC500",
+    "weekly_lectures": 2,
+    "department": 12,
+    "batch": 40,
+    "teacher": 60
+  }
+},
+{
+  "model": "api.subject",
+  "pk": 166,
+  "fields": {
+    "name": "Elective",
+    "code": "ELEC500",
+    "weekly_lectures": 2,
+    "department": 12,
+    "batch": 41,
+    "teacher": 61
+  }
+},
+{
+  "model": "api.room",
+  "pk": 36,
+  "fields": {
+    "name": "Room 101",
+    "capacity": 60,
+    "is_lab": false
+  }
+},
+{
+  "model": "api.room",
+  "pk": 37,
+  "fields": {
+    "name": "Room 102",
+    "capacity": 60,
+    "is_lab": false
+  }
+},
+{
+  "model": "api.room",
+  "pk": 38,
+  "fields": {
+    "name": "Room 103",
+    "capacity": 60,
+    "is_lab": false
+  }
+},
+{
+  "model": "api.room",
+  "pk": 39,
+  "fields": {
+    "name": "Room 101A",
+    "capacity": 30,
+    "is_lab": true
+  }
+},
+{
+  "model": "api.room",
+  "pk": 40,
+  "fields": {
+    "name": "Room 101B",
+    "capacity": 30,
+    "is_lab": true
+  }
+},
+{
+  "model": "api.pinnedslot",
+  "pk": 6,
+  "fields": {
+    "subject": 165,
+    "department": 12,
+    "day": "WED",
+    "slot_index": 2
+  }
+},
+{
+  "model": "api.pinnedslot",
+  "pk": 7,
+  "fields": {
+    "subject": 165,
+    "department": 12,
+    "day": "WED",
+    "slot_index": 3
+  }
+},
+{
+  "model": "api.pinnedslot",
+  "pk": 8,
+  "fields": {
+    "subject": 166,
+    "department": 12,
+    "day": "WED",
+    "slot_index": 2
+  }
+},
+{
+  "model": "api.pinnedslot",
+  "pk": 9,
+  "fields": {
+    "subject": 166,
+    "department": 12,
+    "day": "WED",
+    "slot_index": 3
+  }
+},
+{
+  "model": "api.generatedtimetable",
+  "pk": 73,
+  "fields": {
+    "department": 12,
+    "status": "DRAFT",
+    "variant_number": 1,
+    "created_at": "2026-03-07T08:47:31.587Z"
+  }
+},
+{
+  "model": "api.generatedtimetable",
+  "pk": 74,
+  "fields": {
+    "department": 12,
+    "status": "DRAFT",
+    "variant_number": 2,
+    "created_at": "2026-03-07T08:47:33.540Z"
+  }
+},
+{
+  "model": "api.generatedtimetable",
+  "pk": 75,
+  "fields": {
+    "department": 12,
+    "status": "DRAFT",
+    "variant_number": 3,
+    "created_at": "2026-03-07T08:47:35.448Z"
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3693,
+  "fields": {
+    "timetable": 73,
+    "day": "THU",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 36,
+    "teacher": 53,
+    "subject": 143,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3694,
+  "fields": {
+    "timetable": 73,
+    "day": "TUE",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 37,
+    "teacher": 53,
+    "subject": 143,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3695,
+  "fields": {
+    "timetable": 73,
+    "day": "MON",
+    "start_time": "12:00:00",
+    "end_time": "13:00:00",
+    "room": 38,
+    "teacher": 53,
+    "subject": 143,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3696,
+  "fields": {
+    "timetable": 73,
+    "day": "MON",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 36,
+    "teacher": 53,
+    "subject": 144,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3697,
+  "fields": {
+    "timetable": 73,
+    "day": "FRI",
+    "start_time": "12:00:00",
+    "end_time": "13:00:00",
+    "room": 36,
+    "teacher": 53,
+    "subject": 144,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3698,
+  "fields": {
+    "timetable": 73,
+    "day": "TUE",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 37,
+    "teacher": 53,
+    "subject": 144,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3699,
+  "fields": {
+    "timetable": 73,
+    "day": "THU",
+    "start_time": "12:00:00",
+    "end_time": "13:00:00",
+    "room": 36,
+    "teacher": 54,
+    "subject": 145,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3700,
+  "fields": {
+    "timetable": 73,
+    "day": "FRI",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 36,
+    "teacher": 54,
+    "subject": 145,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3701,
+  "fields": {
+    "timetable": 73,
+    "day": "TUE",
+    "start_time": "12:00:00",
+    "end_time": "13:00:00",
+    "room": 37,
+    "teacher": 54,
+    "subject": 145,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3702,
+  "fields": {
+    "timetable": 73,
+    "day": "THU",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 36,
+    "teacher": 54,
+    "subject": 146,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3703,
+  "fields": {
+    "timetable": 73,
+    "day": "FRI",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 36,
+    "teacher": 54,
+    "subject": 146,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3704,
+  "fields": {
+    "timetable": 73,
+    "day": "TUE",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 37,
+    "teacher": 54,
+    "subject": 146,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3705,
+  "fields": {
+    "timetable": 73,
+    "day": "TUE",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 40,
+    "teacher": 55,
+    "subject": 147,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3706,
+  "fields": {
+    "timetable": 73,
+    "day": "MON",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 38,
+    "teacher": 55,
+    "subject": 147,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3707,
+  "fields": {
+    "timetable": 73,
+    "day": "TUE",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 38,
+    "teacher": 55,
+    "subject": 147,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3708,
+  "fields": {
+    "timetable": 73,
+    "day": "WED",
+    "start_time": "12:00:00",
+    "end_time": "13:00:00",
+    "room": 37,
+    "teacher": 55,
+    "subject": 148,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3709,
+  "fields": {
+    "timetable": 73,
+    "day": "THU",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 37,
+    "teacher": 55,
+    "subject": 148,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3710,
+  "fields": {
+    "timetable": 73,
+    "day": "FRI",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 37,
+    "teacher": 55,
+    "subject": 148,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3711,
+  "fields": {
+    "timetable": 73,
+    "day": "MON",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 39,
+    "teacher": 55,
+    "subject": 149,
+    "batch": 42
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3712,
+  "fields": {
+    "timetable": 73,
+    "day": "WED",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 37,
+    "teacher": 55,
+    "subject": 150,
+    "batch": 43
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3713,
+  "fields": {
+    "timetable": 73,
+    "day": "THU",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 40,
+    "teacher": 55,
+    "subject": 151,
+    "batch": 44
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3714,
+  "fields": {
+    "timetable": 73,
+    "day": "FRI",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 40,
+    "teacher": 55,
+    "subject": 152,
+    "batch": 45
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3715,
+  "fields": {
+    "timetable": 73,
+    "day": "MON",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 38,
+    "teacher": 56,
+    "subject": 153,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3716,
+  "fields": {
+    "timetable": 73,
+    "day": "THU",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 38,
+    "teacher": 56,
+    "subject": 153,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3717,
+  "fields": {
+    "timetable": 73,
+    "day": "FRI",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 38,
+    "teacher": 56,
+    "subject": 153,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3718,
+  "fields": {
+    "timetable": 73,
+    "day": "MON",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 37,
+    "teacher": 56,
+    "subject": 154,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3719,
+  "fields": {
+    "timetable": 73,
+    "day": "WED",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 37,
+    "teacher": 56,
+    "subject": 154,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3720,
+  "fields": {
+    "timetable": 73,
+    "day": "TUE",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 38,
+    "teacher": 56,
+    "subject": 154,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3721,
+  "fields": {
+    "timetable": 73,
+    "day": "WED",
+    "start_time": "12:00:00",
+    "end_time": "13:00:00",
+    "room": 38,
+    "teacher": 57,
+    "subject": 155,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3722,
+  "fields": {
+    "timetable": 73,
+    "day": "THU",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 38,
+    "teacher": 57,
+    "subject": 155,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3723,
+  "fields": {
+    "timetable": 73,
+    "day": "FRI",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 38,
+    "teacher": 57,
+    "subject": 155,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3724,
+  "fields": {
+    "timetable": 73,
+    "day": "MON",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 38,
+    "teacher": 57,
+    "subject": 156,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3725,
+  "fields": {
+    "timetable": 73,
+    "day": "TUE",
+    "start_time": "12:00:00",
+    "end_time": "13:00:00",
+    "room": 38,
+    "teacher": 57,
+    "subject": 156,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3726,
+  "fields": {
+    "timetable": 73,
+    "day": "WED",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 38,
+    "teacher": 57,
+    "subject": 156,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3727,
+  "fields": {
+    "timetable": 73,
+    "day": "MON",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 38,
+    "teacher": 58,
+    "subject": 157,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3728,
+  "fields": {
+    "timetable": 73,
+    "day": "TUE",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 38,
+    "teacher": 58,
+    "subject": 157,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3729,
+  "fields": {
+    "timetable": 73,
+    "day": "WED",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 38,
+    "teacher": 58,
+    "subject": 157,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3730,
+  "fields": {
+    "timetable": 73,
+    "day": "MON",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 36,
+    "teacher": 58,
+    "subject": 158,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3731,
+  "fields": {
+    "timetable": 73,
+    "day": "THU",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 38,
+    "teacher": 58,
+    "subject": 158,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3732,
+  "fields": {
+    "timetable": 73,
+    "day": "FRI",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 38,
+    "teacher": 58,
+    "subject": 158,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3733,
+  "fields": {
+    "timetable": 73,
+    "day": "TUE",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 39,
+    "teacher": 58,
+    "subject": 159,
+    "batch": 42
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3734,
+  "fields": {
+    "timetable": 73,
+    "day": "MON",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 40,
+    "teacher": 58,
+    "subject": 160,
+    "batch": 43
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3735,
+  "fields": {
+    "timetable": 73,
+    "day": "FRI",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 39,
+    "teacher": 58,
+    "subject": 161,
+    "batch": 44
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3736,
+  "fields": {
+    "timetable": 73,
+    "day": "THU",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 39,
+    "teacher": 58,
+    "subject": 162,
+    "batch": 45
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3737,
+  "fields": {
+    "timetable": 73,
+    "day": "THU",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 36,
+    "teacher": 59,
+    "subject": 163,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3738,
+  "fields": {
+    "timetable": 73,
+    "day": "FRI",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 36,
+    "teacher": 59,
+    "subject": 163,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3739,
+  "fields": {
+    "timetable": 73,
+    "day": "MON",
+    "start_time": "12:00:00",
+    "end_time": "13:00:00",
+    "room": 36,
+    "teacher": 59,
+    "subject": 164,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3740,
+  "fields": {
+    "timetable": 73,
+    "day": "TUE",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 36,
+    "teacher": 59,
+    "subject": 164,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3741,
+  "fields": {
+    "timetable": 73,
+    "day": "WED",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 38,
+    "teacher": 60,
+    "subject": 165,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3742,
+  "fields": {
+    "timetable": 73,
+    "day": "WED",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 38,
+    "teacher": 60,
+    "subject": 165,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3743,
+  "fields": {
+    "timetable": 73,
+    "day": "WED",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 36,
+    "teacher": 61,
+    "subject": 166,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3744,
+  "fields": {
+    "timetable": 73,
+    "day": "WED",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 37,
+    "teacher": 61,
+    "subject": 166,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3745,
+  "fields": {
+    "timetable": 74,
+    "day": "WED",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 37,
+    "teacher": 53,
+    "subject": 143,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3746,
+  "fields": {
+    "timetable": 74,
+    "day": "FRI",
+    "start_time": "12:00:00",
+    "end_time": "13:00:00",
+    "room": 37,
+    "teacher": 53,
+    "subject": 143,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3747,
+  "fields": {
+    "timetable": 74,
+    "day": "TUE",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 38,
+    "teacher": 53,
+    "subject": 143,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3748,
+  "fields": {
+    "timetable": 74,
+    "day": "MON",
+    "start_time": "12:00:00",
+    "end_time": "13:00:00",
+    "room": 36,
+    "teacher": 53,
+    "subject": 144,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3749,
+  "fields": {
+    "timetable": 74,
+    "day": "TUE",
+    "start_time": "12:00:00",
+    "end_time": "13:00:00",
+    "room": 36,
+    "teacher": 53,
+    "subject": 144,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3750,
+  "fields": {
+    "timetable": 74,
+    "day": "THU",
+    "start_time": "12:00:00",
+    "end_time": "13:00:00",
+    "room": 36,
+    "teacher": 53,
+    "subject": 144,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3751,
+  "fields": {
+    "timetable": 74,
+    "day": "FRI",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 36,
+    "teacher": 54,
+    "subject": 145,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3752,
+  "fields": {
+    "timetable": 74,
+    "day": "MON",
+    "start_time": "12:00:00",
+    "end_time": "13:00:00",
+    "room": 37,
+    "teacher": 54,
+    "subject": 145,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3753,
+  "fields": {
+    "timetable": 74,
+    "day": "TUE",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 38,
+    "teacher": 54,
+    "subject": 145,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3754,
+  "fields": {
+    "timetable": 74,
+    "day": "TUE",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 36,
+    "teacher": 54,
+    "subject": 146,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3755,
+  "fields": {
+    "timetable": 74,
+    "day": "WED",
+    "start_time": "12:00:00",
+    "end_time": "13:00:00",
+    "room": 36,
+    "teacher": 54,
+    "subject": 146,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3756,
+  "fields": {
+    "timetable": 74,
+    "day": "FRI",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 38,
+    "teacher": 54,
+    "subject": 146,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3757,
+  "fields": {
+    "timetable": 74,
+    "day": "TUE",
+    "start_time": "12:00:00",
+    "end_time": "13:00:00",
+    "room": 37,
+    "teacher": 55,
+    "subject": 147,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3758,
+  "fields": {
+    "timetable": 74,
+    "day": "MON",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 38,
+    "teacher": 55,
+    "subject": 147,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3759,
+  "fields": {
+    "timetable": 74,
+    "day": "THU",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 38,
+    "teacher": 55,
+    "subject": 147,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3760,
+  "fields": {
+    "timetable": 74,
+    "day": "THU",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 36,
+    "teacher": 55,
+    "subject": 148,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3761,
+  "fields": {
+    "timetable": 74,
+    "day": "WED",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 37,
+    "teacher": 55,
+    "subject": 148,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3762,
+  "fields": {
+    "timetable": 74,
+    "day": "FRI",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 37,
+    "teacher": 55,
+    "subject": 148,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3763,
+  "fields": {
+    "timetable": 74,
+    "day": "MON",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 39,
+    "teacher": 55,
+    "subject": 149,
+    "batch": 42
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3764,
+  "fields": {
+    "timetable": 74,
+    "day": "TUE",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 40,
+    "teacher": 55,
+    "subject": 150,
+    "batch": 43
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3765,
+  "fields": {
+    "timetable": 74,
+    "day": "THU",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 40,
+    "teacher": 55,
+    "subject": 151,
+    "batch": 44
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3766,
+  "fields": {
+    "timetable": 74,
+    "day": "WED",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 40,
+    "teacher": 55,
+    "subject": 152,
+    "batch": 45
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3767,
+  "fields": {
+    "timetable": 74,
+    "day": "FRI",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 36,
+    "teacher": 56,
+    "subject": 153,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3768,
+  "fields": {
+    "timetable": 74,
+    "day": "TUE",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 37,
+    "teacher": 56,
+    "subject": 153,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3769,
+  "fields": {
+    "timetable": 74,
+    "day": "MON",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 38,
+    "teacher": 56,
+    "subject": 153,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3770,
+  "fields": {
+    "timetable": 74,
+    "day": "TUE",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 36,
+    "teacher": 56,
+    "subject": 154,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3771,
+  "fields": {
+    "timetable": 74,
+    "day": "MON",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 37,
+    "teacher": 56,
+    "subject": 154,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3772,
+  "fields": {
+    "timetable": 74,
+    "day": "FRI",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 37,
+    "teacher": 56,
+    "subject": 154,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3773,
+  "fields": {
+    "timetable": 74,
+    "day": "FRI",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 36,
+    "teacher": 57,
+    "subject": 155,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3774,
+  "fields": {
+    "timetable": 74,
+    "day": "THU",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 37,
+    "teacher": 57,
+    "subject": 155,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3775,
+  "fields": {
+    "timetable": 74,
+    "day": "WED",
+    "start_time": "12:00:00",
+    "end_time": "13:00:00",
+    "room": 38,
+    "teacher": 57,
+    "subject": 155,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3776,
+  "fields": {
+    "timetable": 74,
+    "day": "MON",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 37,
+    "teacher": 57,
+    "subject": 156,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3777,
+  "fields": {
+    "timetable": 74,
+    "day": "TUE",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 37,
+    "teacher": 57,
+    "subject": 156,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3778,
+  "fields": {
+    "timetable": 74,
+    "day": "THU",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 38,
+    "teacher": 57,
+    "subject": 156,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3779,
+  "fields": {
+    "timetable": 74,
+    "day": "THU",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 37,
+    "teacher": 58,
+    "subject": 157,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3780,
+  "fields": {
+    "timetable": 74,
+    "day": "FRI",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 37,
+    "teacher": 58,
+    "subject": 157,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3781,
+  "fields": {
+    "timetable": 74,
+    "day": "WED",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 38,
+    "teacher": 58,
+    "subject": 157,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3782,
+  "fields": {
+    "timetable": 74,
+    "day": "MON",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 36,
+    "teacher": 58,
+    "subject": 158,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3783,
+  "fields": {
+    "timetable": 74,
+    "day": "THU",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 36,
+    "teacher": 58,
+    "subject": 158,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3784,
+  "fields": {
+    "timetable": 74,
+    "day": "FRI",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 38,
+    "teacher": 58,
+    "subject": 158,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3785,
+  "fields": {
+    "timetable": 74,
+    "day": "TUE",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 39,
+    "teacher": 58,
+    "subject": 159,
+    "batch": 42
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3786,
+  "fields": {
+    "timetable": 74,
+    "day": "MON",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 40,
+    "teacher": 58,
+    "subject": 160,
+    "batch": 43
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3787,
+  "fields": {
+    "timetable": 74,
+    "day": "WED",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 39,
+    "teacher": 58,
+    "subject": 161,
+    "batch": 44
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3788,
+  "fields": {
+    "timetable": 74,
+    "day": "THU",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 39,
+    "teacher": 58,
+    "subject": 162,
+    "batch": 45
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3789,
+  "fields": {
+    "timetable": 74,
+    "day": "MON",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 38,
+    "teacher": 59,
+    "subject": 163,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3790,
+  "fields": {
+    "timetable": 74,
+    "day": "THU",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 38,
+    "teacher": 59,
+    "subject": 163,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3791,
+  "fields": {
+    "timetable": 74,
+    "day": "MON",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 36,
+    "teacher": 59,
+    "subject": 164,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3792,
+  "fields": {
+    "timetable": 74,
+    "day": "TUE",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 38,
+    "teacher": 59,
+    "subject": 164,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3793,
+  "fields": {
+    "timetable": 74,
+    "day": "WED",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 37,
+    "teacher": 60,
+    "subject": 165,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3794,
+  "fields": {
+    "timetable": 74,
+    "day": "WED",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 37,
+    "teacher": 60,
+    "subject": 165,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3795,
+  "fields": {
+    "timetable": 74,
+    "day": "WED",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 36,
+    "teacher": 61,
+    "subject": 166,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3796,
+  "fields": {
+    "timetable": 74,
+    "day": "WED",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 36,
+    "teacher": 61,
+    "subject": 166,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3797,
+  "fields": {
+    "timetable": 75,
+    "day": "THU",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 36,
+    "teacher": 53,
+    "subject": 143,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3798,
+  "fields": {
+    "timetable": 75,
+    "day": "FRI",
+    "start_time": "12:00:00",
+    "end_time": "13:00:00",
+    "room": 36,
+    "teacher": 53,
+    "subject": 143,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3799,
+  "fields": {
+    "timetable": 75,
+    "day": "WED",
+    "start_time": "12:00:00",
+    "end_time": "13:00:00",
+    "room": 37,
+    "teacher": 53,
+    "subject": 143,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3800,
+  "fields": {
+    "timetable": 75,
+    "day": "MON",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 36,
+    "teacher": 53,
+    "subject": 144,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3801,
+  "fields": {
+    "timetable": 75,
+    "day": "WED",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 37,
+    "teacher": 53,
+    "subject": 144,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3802,
+  "fields": {
+    "timetable": 75,
+    "day": "THU",
+    "start_time": "12:00:00",
+    "end_time": "13:00:00",
+    "room": 37,
+    "teacher": 53,
+    "subject": 144,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3803,
+  "fields": {
+    "timetable": 75,
+    "day": "FRI",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 36,
+    "teacher": 54,
+    "subject": 145,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3804,
+  "fields": {
+    "timetable": 75,
+    "day": "TUE",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 37,
+    "teacher": 54,
+    "subject": 145,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3805,
+  "fields": {
+    "timetable": 75,
+    "day": "THU",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 38,
+    "teacher": 54,
+    "subject": 145,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3806,
+  "fields": {
+    "timetable": 75,
+    "day": "MON",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 36,
+    "teacher": 54,
+    "subject": 146,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3807,
+  "fields": {
+    "timetable": 75,
+    "day": "THU",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 36,
+    "teacher": 54,
+    "subject": 146,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3808,
+  "fields": {
+    "timetable": 75,
+    "day": "FRI",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 37,
+    "teacher": 54,
+    "subject": 146,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3809,
+  "fields": {
+    "timetable": 75,
+    "day": "MON",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 38,
+    "teacher": 55,
+    "subject": 147,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3810,
+  "fields": {
+    "timetable": 75,
+    "day": "TUE",
+    "start_time": "12:00:00",
+    "end_time": "13:00:00",
+    "room": 38,
+    "teacher": 55,
+    "subject": 147,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3811,
+  "fields": {
+    "timetable": 75,
+    "day": "THU",
+    "start_time": "12:00:00",
+    "end_time": "13:00:00",
+    "room": 38,
+    "teacher": 55,
+    "subject": 147,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3812,
+  "fields": {
+    "timetable": 75,
+    "day": "TUE",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 36,
+    "teacher": 55,
+    "subject": 148,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3813,
+  "fields": {
+    "timetable": 75,
+    "day": "WED",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 37,
+    "teacher": 55,
+    "subject": 148,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3814,
+  "fields": {
+    "timetable": 75,
+    "day": "FRI",
+    "start_time": "12:00:00",
+    "end_time": "13:00:00",
+    "room": 37,
+    "teacher": 55,
+    "subject": 148,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3815,
+  "fields": {
+    "timetable": 75,
+    "day": "MON",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 39,
+    "teacher": 55,
+    "subject": 149,
+    "batch": 42
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3816,
+  "fields": {
+    "timetable": 75,
+    "day": "WED",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 39,
+    "teacher": 55,
+    "subject": 150,
+    "batch": 43
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3817,
+  "fields": {
+    "timetable": 75,
+    "day": "TUE",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 40,
+    "teacher": 55,
+    "subject": 151,
+    "batch": 44
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3818,
+  "fields": {
+    "timetable": 75,
+    "day": "THU",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 40,
+    "teacher": 55,
+    "subject": 152,
+    "batch": 45
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3819,
+  "fields": {
+    "timetable": 75,
+    "day": "TUE",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 37,
+    "teacher": 56,
+    "subject": 153,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3820,
+  "fields": {
+    "timetable": 75,
+    "day": "FRI",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 37,
+    "teacher": 56,
+    "subject": 153,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3821,
+  "fields": {
+    "timetable": 75,
+    "day": "MON",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 38,
+    "teacher": 56,
+    "subject": 153,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3822,
+  "fields": {
+    "timetable": 75,
+    "day": "MON",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 36,
+    "teacher": 56,
+    "subject": 154,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3823,
+  "fields": {
+    "timetable": 75,
+    "day": "FRI",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 36,
+    "teacher": 56,
+    "subject": 154,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3824,
+  "fields": {
+    "timetable": 75,
+    "day": "TUE",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 38,
+    "teacher": 56,
+    "subject": 154,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3825,
+  "fields": {
+    "timetable": 75,
+    "day": "TUE",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 36,
+    "teacher": 57,
+    "subject": 155,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3826,
+  "fields": {
+    "timetable": 75,
+    "day": "FRI",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 36,
+    "teacher": 57,
+    "subject": 155,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3827,
+  "fields": {
+    "timetable": 75,
+    "day": "THU",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 38,
+    "teacher": 57,
+    "subject": 155,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3828,
+  "fields": {
+    "timetable": 75,
+    "day": "TUE",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 36,
+    "teacher": 57,
+    "subject": 156,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3829,
+  "fields": {
+    "timetable": 75,
+    "day": "WED",
+    "start_time": "12:00:00",
+    "end_time": "13:00:00",
+    "room": 36,
+    "teacher": 57,
+    "subject": 156,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3830,
+  "fields": {
+    "timetable": 75,
+    "day": "THU",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 37,
+    "teacher": 57,
+    "subject": 156,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3831,
+  "fields": {
+    "timetable": 75,
+    "day": "MON",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 38,
+    "teacher": 58,
+    "subject": 157,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3832,
+  "fields": {
+    "timetable": 75,
+    "day": "THU",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 38,
+    "teacher": 58,
+    "subject": 157,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3833,
+  "fields": {
+    "timetable": 75,
+    "day": "FRI",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 38,
+    "teacher": 58,
+    "subject": 157,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3834,
+  "fields": {
+    "timetable": 75,
+    "day": "MON",
+    "start_time": "12:00:00",
+    "end_time": "13:00:00",
+    "room": 36,
+    "teacher": 58,
+    "subject": 158,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3835,
+  "fields": {
+    "timetable": 75,
+    "day": "THU",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 37,
+    "teacher": 58,
+    "subject": 158,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3836,
+  "fields": {
+    "timetable": 75,
+    "day": "FRI",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 38,
+    "teacher": 58,
+    "subject": 158,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3837,
+  "fields": {
+    "timetable": 75,
+    "day": "WED",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 40,
+    "teacher": 58,
+    "subject": 159,
+    "batch": 42
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3838,
+  "fields": {
+    "timetable": 75,
+    "day": "MON",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 40,
+    "teacher": 58,
+    "subject": 160,
+    "batch": 43
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3839,
+  "fields": {
+    "timetable": 75,
+    "day": "THU",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 39,
+    "teacher": 58,
+    "subject": 161,
+    "batch": 44
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3840,
+  "fields": {
+    "timetable": 75,
+    "day": "TUE",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 39,
+    "teacher": 58,
+    "subject": 162,
+    "batch": 45
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3841,
+  "fields": {
+    "timetable": 75,
+    "day": "TUE",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 37,
+    "teacher": 59,
+    "subject": 163,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3842,
+  "fields": {
+    "timetable": 75,
+    "day": "WED",
+    "start_time": "08:30:00",
+    "end_time": "09:30:00",
+    "room": 38,
+    "teacher": 59,
+    "subject": 163,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3843,
+  "fields": {
+    "timetable": 75,
+    "day": "FRI",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 36,
+    "teacher": 59,
+    "subject": 164,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3844,
+  "fields": {
+    "timetable": 75,
+    "day": "MON",
+    "start_time": "07:30:00",
+    "end_time": "08:30:00",
+    "room": 38,
+    "teacher": 59,
+    "subject": 164,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3845,
+  "fields": {
+    "timetable": 75,
+    "day": "WED",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 38,
+    "teacher": 60,
+    "subject": 165,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3846,
+  "fields": {
+    "timetable": 75,
+    "day": "WED",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 38,
+    "teacher": 60,
+    "subject": 165,
+    "batch": 40
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3847,
+  "fields": {
+    "timetable": 75,
+    "day": "WED",
+    "start_time": "11:00:00",
+    "end_time": "12:00:00",
+    "room": 36,
+    "teacher": 61,
+    "subject": 166,
+    "batch": 41
+  }
+},
+{
+  "model": "api.timetableslot",
+  "pk": 3848,
+  "fields": {
+    "timetable": 75,
+    "day": "WED",
+    "start_time": "10:00:00",
+    "end_time": "11:00:00",
+    "room": 37,
+    "teacher": 61,
+    "subject": 166,
+    "batch": 41
+  }
+},
+{
+  "model": "authtoken.token",
+  "pk": "715201747a654f6c73fdd34e5c921cc189c21a22",
+  "fields": {
+    "user": 10,
+    "created": "2026-02-26T05:10:19.405Z"
+  }
+},
+{
+  "model": "authtoken.token",
+  "pk": "cc0bcf2399d5353fff413d76061d405eb4227b0a",
+  "fields": {
+    "user": 1,
+    "created": "2026-02-05T02:45:47.250Z"
+  }
+},
+{
+  "model": "authtoken.token",
+  "pk": "f728c4ad434b8472e42fd46e88f3397bda183cb4",
+  "fields": {
+    "user": 57,
+    "created": "2026-03-02T05:54:26.132Z"
+  }
+}
+]
