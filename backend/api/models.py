@@ -102,3 +102,21 @@ class TimetableSlot(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     batch = models.ForeignKey(StudentBatch, on_delete=models.CASCADE)
+
+
+# 9. LeaveApplication (Teacher leave requests)
+class LeaveApplication(models.Model):
+    STATUS_CHOICES = [('PENDING', 'Pending'), ('APPROVED', 'Approved'), ('DECLINED', 'Declined')]
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, related_name='leave_applications')
+    date = models.DateField()
+    reason = models.TextField(blank=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDING')
+    admin_remarks = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.teacher.name} - {self.date} ({self.status})"

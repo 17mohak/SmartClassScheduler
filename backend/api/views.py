@@ -107,10 +107,30 @@ class PinnedSlotViewSet(BaseViewSet):
         return qs
 
 
+class IsAdminOrOwnTeacher(permissions.BasePermission):
+    """Allow admin full access, or teachers to manage their own records."""
+    def has_permission(self, request, view):
+        if not request.user or not request.user.is_authenticated:
+            return request.method in permissions.SAFE_METHODS
+        if request.user.is_staff:
+            return True
+        # Teachers can read and create for themselves
+        return True
+
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_staff:
+            return True
+        # Teachers can only modify their own records
+        teacher_field = getattr(obj, 'teacher', None)
+        if teacher_field and hasattr(request.user, 'teacher'):
+            return teacher_field.id == request.user.teacher.id
+        return False
+
+
 class TeacherUnavailabilityViewSet(BaseViewSet):
     queryset = TeacherUnavailability.objects.all()
     serializer_class = TeacherUnavailabilitySerializer
-    permission_classes = [IsAdminOrReadOnly]
+    permission_classes = [IsAdminOrOwnTeacher]
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -121,6 +141,52 @@ class TeacherUnavailabilityViewSet(BaseViewSet):
         if dept:
             qs = qs.filter(teacher__department_id=dept)
         return qs
+
+    def perform_create(self, serializer):
+        # If teacher (non-admin), force teacher to be themselves
+        if not self.request.user.is_staff and hasattr(self.request.user, 'teacher'):
+            serializer.save(teacher=self.request.user.teacher)
+        else:
+            serializer.save()
+
+
+class LeaveApplicationViewSet(viewsets.ModelViewSet):
+    queryset = LeaveApplication.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.request.user.is_staff:
+            return LeaveApplicationAdminSerializer
+        return LeaveApplicationSerializer
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        # Faculty can only see their own leave applications
+        if self.request.user and not self.request.user.is_staff:
+            if hasattr(self.request.user, 'teacher'):
+                qs = qs.filter(teacher=self.request.user.teacher)
+            else:
+                qs = qs.none()
+        # Filter by teacher
+        teacher = self.request.query_params.get('teacher')
+        if teacher:
+            qs = qs.filter(teacher_id=teacher)
+        # Filter by status
+        status_filter = self.request.query_params.get('status')
+        if status_filter:
+            qs = qs.filter(status=status_filter)
+        # Filter by department
+        dept = self.request.query_params.get('department')
+        if dept:
+            qs = qs.filter(teacher__department_id=dept)
+        return qs
+
+    def perform_create(self, serializer):
+        # Faculty can only create leave for themselves
+        if not self.request.user.is_staff and hasattr(self.request.user, 'teacher'):
+            serializer.save(teacher=self.request.user.teacher)
+        else:
+            serializer.save()
 
 
 class GeneratedTimetableViewSet(viewsets.ModelViewSet):
@@ -289,6 +355,35 @@ def approve_timetable(request, pk):
     tt.save()
 
     return Response({"status": "success", "message": f"Variant {tt.variant_number} published! All other variants deleted."})
+
+
+# --- LEAVE APPLICATION APPROVE/DECLINE ---
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def update_leave_status(request, pk):
+    if not request.user.is_staff:
+        return Response({"error": "Only admins can approve/decline leave applications"}, status=403)
+
+    try:
+        leave = LeaveApplication.objects.get(id=pk)
+    except LeaveApplication.DoesNotExist:
+        return Response({"error": "Leave application not found"}, status=404)
+
+    new_status = request.data.get('status')
+    if new_status not in ['APPROVED', 'DECLINED']:
+        return Response({"error": "Status must be APPROVED or DECLINED"}, status=400)
+
+    admin_remarks = request.data.get('admin_remarks', '')
+    leave.status = new_status
+    leave.admin_remarks = admin_remarks
+    leave.save()
+
+    return Response({
+        "status": "success",
+        "message": f"Leave application {new_status.lower()}.",
+        "leave": LeaveApplicationAdminSerializer(leave).data
+    })
 
 
 # --- SWAP / MOVE SLOTS ---

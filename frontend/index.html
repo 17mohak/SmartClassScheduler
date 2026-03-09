@@ -1129,8 +1129,9 @@
 
         // ═══ APP CONTROLLER ═══
         const app = {
-            state: { subjects: [], teachers: [], batches: [], currentDept: null, currentBatch: null, variants: [], currentVariant: null, pins: [], conflicts: [], unavailabilities: [] },
+            state: { subjects: [], teachers: [], batches: [], currentDept: null, currentBatch: null, variants: [], currentVariant: null, pins: [], conflicts: [], unavailabilities: [], leaveApplications: [] },
             activeTab: 'subjects',
+            facultyTab: 'availability',
 
             render: (pageId) => {
                 const c = document.getElementById('app');
@@ -1183,6 +1184,7 @@
                     } catch (err) { console.error('Failed to load departments:', err); }
                 } else {
                     app.state.currentDept = auth.user.department_id;
+                    app.facultyTab = 'availability';
                     try {
                         const sRes = await fetch(`${API_URL}/slots/?department=${auth.user.department_id}&teacher=${auth.user.teacher_id}`, { headers: { 'Authorization': `Token ${auth.token}` } });
                         const slots = await sRes.json();
@@ -1205,10 +1207,13 @@
                                 }
                             }
                         }
+                        // Render the faculty sidebar panel
+                        app.renderFacultyPanel();
                     } catch (err) {
                         console.error('Failed to load faculty timetable:', err);
                         app.renderTimetable([]);
                         document.getElementById('table-title').textContent = 'No published schedule yet';
+                        app.renderFacultyPanel();
                     }
                 }
             },
@@ -1316,10 +1321,13 @@
                 const container = document.getElementById('data-manager'); container.innerHTML = '';
                 const btnSub = document.getElementById('btn-tab-sub');
                 const btnTea = document.getElementById('btn-tab-tea');
+                const btnLeaves = document.getElementById('btn-tab-leaves');
+                const inactiveClass = "flex-1 py-2.5 text-sm font-bold bg-white/[0.03] hover:bg-white/[0.06] text-slate-400 rounded-lg border border-white/5 transition-all";
 
                 if (app.activeTab === 'subjects') {
                     btnSub.className = "flex-1 py-2.5 text-sm font-bold bg-gradient-to-r from-atlas-teal to-atlas-indigo text-white rounded-lg shadow-lg shadow-atlas-teal/10 transition-all";
-                    btnTea.className = "flex-1 py-2.5 text-sm font-bold bg-white/[0.03] hover:bg-white/[0.06] text-slate-400 rounded-lg border border-white/5 transition-all";
+                    btnTea.className = inactiveClass;
+                    btnLeaves.className = inactiveClass;
 
                     let filteredSubjects = app.state.subjects;
                     if (app.state.currentBatch) {
@@ -1351,9 +1359,10 @@
                                 </div>
                             </div>`;
                     });
-                } else {
+                } else if (app.activeTab === 'teachers') {
                     btnTea.className = "flex-1 py-2.5 text-sm font-bold bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg shadow-lg shadow-purple-500/10 transition-all";
-                    btnSub.className = "flex-1 py-2.5 text-sm font-bold bg-white/[0.03] hover:bg-white/[0.06] text-slate-400 rounded-lg border border-white/5 transition-all";
+                    btnSub.className = inactiveClass;
+                    btnLeaves.className = inactiveClass;
 
                     if (app.state.teachers.length === 0) return container.innerHTML = '<div class="text-center text-slate-600 mt-10 text-sm">No faculty found.</div>';
 
@@ -1381,6 +1390,11 @@
                                 </div>
                             </div>`;
                     });
+                } else if (app.activeTab === 'leaves') {
+                    btnLeaves.className = "flex-1 py-2.5 text-sm font-bold bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-lg shadow-lg shadow-amber-500/10 transition-all";
+                    btnSub.className = inactiveClass;
+                    btnTea.className = inactiveClass;
+                    app.renderAdminLeaves(container);
                 }
             },
 
@@ -1949,6 +1963,310 @@
                 } catch (e) { alert('Error toggling availability'); }
             },
 
+            // ═══ FACULTY PANEL (Availability + Leave) ═══
+            renderFacultyPanel: async () => {
+                const panel = document.getElementById('faculty-panel');
+                if (!panel) return;
+                const btnAvail = document.getElementById('btn-ftab-avail');
+                const btnLeaves = document.getElementById('btn-ftab-leaves');
+                const activeClass = "flex-1 py-2 text-xs font-bold bg-gradient-to-r from-atlas-teal to-atlas-indigo text-white rounded-lg shadow-lg shadow-atlas-teal/10 transition-all";
+                const inactiveClass = "flex-1 py-2 text-xs font-bold bg-white/[0.03] hover:bg-white/[0.06] text-slate-400 rounded-lg border border-white/5 transition-all";
+
+                if (app.facultyTab === 'availability') {
+                    btnAvail.className = activeClass;
+                    btnLeaves.className = inactiveClass;
+                    await app.renderFacultyAvailability(panel);
+                } else {
+                    btnLeaves.className = "flex-1 py-2 text-xs font-bold bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-lg shadow-lg shadow-amber-500/10 transition-all";
+                    btnAvail.className = inactiveClass;
+                    await app.renderFacultyLeaves(panel);
+                }
+            },
+
+            renderFacultyAvailability: async (panel) => {
+                const teacherId = auth.user.teacher_id;
+                let unavails = [];
+                try {
+                    const res = await fetch(`${API_URL}/teacher-unavailability/?teacher=${teacherId}`, { headers: { 'Authorization': `Token ${auth.token}` } });
+                    unavails = await res.json();
+                } catch (e) { console.error('Failed to load unavailabilities'); }
+
+                const unavailSet = new Set(unavails.map(u => `${u.day}_${u.slot_index}`));
+                const unavailMap = {};
+                unavails.forEach(u => { unavailMap[`${u.day}_${u.slot_index}`] = u.id; });
+
+                const days = ['MON', 'TUE', 'WED', 'THU', 'FRI'];
+                const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+
+                let html = `
+                    <div class="text-center mb-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-atlas-teal/20 to-emerald-500/20 rounded-2xl mx-auto flex items-center justify-center text-lg text-atlas-teal mb-2 border border-atlas-teal/20">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <h4 class="font-bold font-exo text-sm">Weekly Availability</h4>
+                        <p class="text-[10px] text-slate-500 mt-1">Toggle slots to set your availability</p>
+                    </div>
+                    <div class="text-[10px] text-slate-500 mb-2 flex gap-3 justify-center">
+                        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-green-500/20 border border-green-500/30 inline-block"></span> Available</span>
+                        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded bg-red-500/20 border border-red-500/30 inline-block"></span> Unavailable</span>
+                    </div>
+                `;
+                html += `<div class="overflow-x-auto"><table class="w-full text-center text-xs border-collapse">
+                    <thead><tr><th class="p-1 text-[10px] text-slate-500">Time</th>
+                    ${dayLabels.map(d => `<th class="p-1 text-[10px] text-slate-500">${d}</th>`).join('')}
+                    </tr></thead><tbody>`;
+
+                TIME_SLOTS.forEach((ts, slotIdx) => {
+                    html += `<tr>`;
+                    html += `<td class="p-0.5 text-[9px] text-slate-500 whitespace-nowrap">${ts.label}</td>`;
+                    days.forEach(day => {
+                        const key = `${day}_${slotIdx}`;
+                        const isUnavail = unavailSet.has(key);
+                        const bg = isUnavail ? 'bg-red-500/20 border-red-500/30' : 'bg-green-500/10 border-green-500/20';
+                        const icon = isUnavail ? '✕' : '✓';
+                        const iconColor = isUnavail ? 'text-red-400' : 'text-green-400';
+                        html += `<td class="p-0.5">
+                            <button onclick="app.toggleFacultyUnavailability('${day}', ${slotIdx}, this)"
+                                class="avail-btn w-full py-1.5 rounded-lg border ${bg} ${iconColor} text-[10px] font-bold transition-all hover:scale-105 cursor-pointer"
+                                data-unavail="${isUnavail}" data-record-id="${unavailMap[key] || ''}">${icon}</button>
+                        </td>`;
+                    });
+                    html += `</tr>`;
+                });
+                html += `</tbody></table></div>`;
+                panel.innerHTML = html;
+            },
+
+            toggleFacultyUnavailability: async (day, slotIndex, btn) => {
+                const teacherId = auth.user.teacher_id;
+                const isCurrentlyUnavail = btn.dataset.unavail === 'true';
+                try {
+                    if (isCurrentlyUnavail) {
+                        const recordId = btn.dataset.recordId;
+                        if (recordId) {
+                            await fetch(`${API_URL}/teacher-unavailability/${recordId}/`, { method: 'DELETE', headers: { 'Authorization': `Token ${auth.token}` } });
+                        }
+                        btn.dataset.unavail = 'false';
+                        btn.dataset.recordId = '';
+                        btn.className = 'avail-btn w-full py-1.5 rounded-lg border bg-green-500/10 border-green-500/20 text-green-400 text-[10px] font-bold transition-all hover:scale-105 cursor-pointer';
+                        btn.textContent = '✓';
+                    } else {
+                        const res = await fetch(`${API_URL}/teacher-unavailability/`, {
+                            method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Token ${auth.token}` },
+                            body: JSON.stringify({ teacher: teacherId, day, slot_index: slotIndex })
+                        });
+                        const data = await res.json();
+                        btn.dataset.unavail = 'true';
+                        btn.dataset.recordId = data.id;
+                        btn.className = 'avail-btn w-full py-1.5 rounded-lg border bg-red-500/20 border-red-500/30 text-red-400 text-[10px] font-bold transition-all hover:scale-105 cursor-pointer';
+                        btn.textContent = '✕';
+                    }
+                } catch (e) { alert('Error toggling availability'); }
+            },
+
+            renderFacultyLeaves: async (panel) => {
+                let leaves = [];
+                try {
+                    const res = await fetch(`${API_URL}/leave-applications/`, { headers: { 'Authorization': `Token ${auth.token}` } });
+                    leaves = await res.json();
+                } catch (e) { console.error('Failed to load leaves'); }
+
+                let html = `
+                    <div class="text-center mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-amber-400/20 to-orange-500/20 rounded-2xl mx-auto flex items-center justify-center text-lg text-amber-400 mb-2 border border-amber-400/20">
+                            <i class="fas fa-plane-departure"></i>
+                        </div>
+                        <h4 class="font-bold font-exo text-sm">Leave Applications</h4>
+                        <p class="text-[10px] text-slate-500 mt-1">Apply for leave and track status</p>
+                    </div>
+
+                    <!-- Apply form -->
+                    <div class="glass p-4 rounded-xl border border-atlas-teal/10 mb-4">
+                        <h5 class="text-[10px] uppercase text-atlas-teal font-bold tracking-wider mb-3"><i class="fas fa-plus mr-1"></i>New Leave Request</h5>
+                        <div class="space-y-2">
+                            <div>
+                                <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1 block">Date</label>
+                                <input type="date" id="leave-date" class="custom-input text-xs" min="${new Date().toISOString().split('T')[0]}">
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1 block">Reason</label>
+                                <textarea id="leave-reason" class="custom-input text-xs" rows="2" placeholder="Reason for leave..."></textarea>
+                            </div>
+                            <button onclick="app.submitLeaveApplication()" class="w-full py-2.5 btn-primary rounded-xl font-bold text-xs text-white">
+                                <i class="fas fa-paper-plane mr-1"></i>Submit Application
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Leave history -->
+                    <div class="text-[10px] uppercase text-slate-500 font-bold tracking-wider mb-2">Your Applications</div>
+                `;
+
+                if (leaves.length === 0) {
+                    html += '<div class="text-center text-slate-600 text-xs py-4">No leave applications yet</div>';
+                } else {
+                    leaves.forEach(l => {
+                        const statusColors = {
+                            'PENDING': { bg: 'bg-amber-400/10', border: 'border-amber-400/20', text: 'text-amber-400', icon: 'fa-clock' },
+                            'APPROVED': { bg: 'bg-green-400/10', border: 'border-green-400/20', text: 'text-green-400', icon: 'fa-check-circle' },
+                            'DECLINED': { bg: 'bg-red-400/10', border: 'border-red-400/20', text: 'text-red-400', icon: 'fa-times-circle' }
+                        };
+                        const sc = statusColors[l.status] || statusColors.PENDING;
+                        const dateStr = new Date(l.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                        html += `
+                            <div class="glass p-3 rounded-xl border-l-2 ${sc.border} mb-2 hover:bg-white/[0.02] transition-all">
+                                <div class="flex items-start justify-between mb-1">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-calendar-day text-slate-500 text-xs"></i>
+                                        <span class="font-bold text-white text-xs">${dateStr}</span>
+                                    </div>
+                                    <span class="${sc.bg} ${sc.border} ${sc.text} text-[9px] font-bold px-2 py-0.5 rounded-full border">
+                                        <i class="fas ${sc.icon} mr-1"></i>${l.status}
+                                    </span>
+                                </div>
+                                ${l.reason ? `<p class="text-[10px] text-slate-400 mt-1 ml-5">${l.reason}</p>` : ''}
+                                ${l.admin_remarks ? `<p class="text-[10px] text-slate-500 mt-1 ml-5 italic"><i class="fas fa-comment-dots mr-1 text-slate-600"></i>${l.admin_remarks}</p>` : ''}
+                                ${l.status === 'PENDING' ? `<button onclick="app.cancelLeave(${l.id})" class="text-[10px] text-red-400/60 hover:text-red-400 mt-1 ml-5 transition-colors"><i class="fas fa-trash mr-1"></i>Cancel</button>` : ''}
+                            </div>
+                        `;
+                    });
+                }
+
+                panel.innerHTML = html;
+            },
+
+            submitLeaveApplication: async () => {
+                const date = document.getElementById('leave-date')?.value;
+                const reason = document.getElementById('leave-reason')?.value || '';
+                if (!date) return alert('Please select a date');
+                try {
+                    const res = await fetch(`${API_URL}/leave-applications/`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Token ${auth.token}` },
+                        body: JSON.stringify({ teacher: auth.user.teacher_id, date, reason })
+                    });
+                    if (!res.ok) { const d = await res.json(); throw new Error(d.detail || d.error || 'Failed'); }
+                    app.renderFacultyPanel();
+                } catch (e) { alert('Error submitting leave: ' + e.message); }
+            },
+
+            cancelLeave: async (id) => {
+                if (!confirm('Cancel this leave application?')) return;
+                try {
+                    await fetch(`${API_URL}/leave-applications/${id}/`, { method: 'DELETE', headers: { 'Authorization': `Token ${auth.token}` } });
+                    app.renderFacultyPanel();
+                } catch (e) { alert('Error cancelling leave'); }
+            },
+
+            // ═══ ADMIN LEAVE MANAGEMENT ═══
+            renderAdminLeaves: async (container) => {
+                container.innerHTML = '<div class="flex justify-center py-8"><div class="loader"></div></div>';
+                const deptId = app.state.currentDept;
+                let leaves = [];
+                try {
+                    let url = `${API_URL}/leave-applications/`;
+                    if (deptId) url += `?department=${deptId}`;
+                    const res = await fetch(url, { headers: { 'Authorization': `Token ${auth.token}` } });
+                    leaves = await res.json();
+                } catch (e) { container.innerHTML = '<div class="text-center text-red-400 text-sm py-4">Failed to load leave applications</div>'; return; }
+
+                if (leaves.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-8">
+                            <div class="w-14 h-14 bg-gradient-to-br from-amber-400/20 to-orange-500/20 rounded-2xl mx-auto flex items-center justify-center text-xl text-amber-400 mb-3 border border-amber-400/20">
+                                <i class="fas fa-inbox"></i>
+                            </div>
+                            <p class="text-sm text-slate-500">No leave applications</p>
+                            <p class="text-[10px] text-slate-600 mt-1">Leave requests from faculty will appear here</p>
+                        </div>`;
+                    return;
+                }
+
+                // Group by status
+                const pending = leaves.filter(l => l.status === 'PENDING');
+                const others = leaves.filter(l => l.status !== 'PENDING');
+
+                let html = '';
+
+                if (pending.length > 0) {
+                    html += `<div class="text-[10px] uppercase text-amber-400 font-bold tracking-wider mb-2 flex items-center gap-2">
+                        <i class="fas fa-clock"></i>Pending Approval (${pending.length})
+                    </div>`;
+                    pending.forEach(l => {
+                        const dateStr = new Date(l.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+                        html += `
+                            <div class="glass p-3.5 rounded-xl border-l-2 border-amber-400/50 mb-2 hover:bg-white/[0.02] transition-all">
+                                <div class="flex items-start justify-between mb-2">
+                                    <div>
+                                        <span class="font-bold text-white text-sm">${l.teacher_name}</span>
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <i class="fas fa-calendar-day text-amber-400 text-[10px]"></i>
+                                            <span class="text-xs text-slate-400">${dateStr}</span>
+                                        </div>
+                                    </div>
+                                    <span class="bg-amber-400/10 border border-amber-400/20 text-amber-400 text-[9px] font-bold px-2 py-0.5 rounded-full">
+                                        <i class="fas fa-clock mr-1"></i>PENDING
+                                    </span>
+                                </div>
+                                ${l.reason ? `<p class="text-[10px] text-slate-400 mb-3 bg-white/[0.02] p-2 rounded-lg"><i class="fas fa-quote-left mr-1 text-slate-600 text-[8px]"></i>${l.reason}</p>` : ''}
+                                <div class="flex gap-2">
+                                    <button onclick="app.updateLeaveStatus(${l.id}, 'APPROVED')" class="flex-1 py-2 bg-green-500/10 border border-green-500/30 text-green-400 text-[10px] font-bold rounded-lg hover:bg-green-500/20 transition-all">
+                                        <i class="fas fa-check mr-1"></i>Approve
+                                    </button>
+                                    <button onclick="app.updateLeaveStatus(${l.id}, 'DECLINED')" class="flex-1 py-2 bg-red-500/10 border border-red-500/30 text-red-400 text-[10px] font-bold rounded-lg hover:bg-red-500/20 transition-all">
+                                        <i class="fas fa-times mr-1"></i>Decline
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+
+                if (others.length > 0) {
+                    html += `<div class="text-[10px] uppercase text-slate-500 font-bold tracking-wider mb-2 mt-4 flex items-center gap-2">
+                        <i class="fas fa-history"></i>History (${others.length})
+                    </div>`;
+                    others.forEach(l => {
+                        const dateStr = new Date(l.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                        const isApproved = l.status === 'APPROVED';
+                        const sc = isApproved
+                            ? { border: 'border-green-400/30', text: 'text-green-400', bg: 'bg-green-400/10', icon: 'fa-check-circle' }
+                            : { border: 'border-red-400/30', text: 'text-red-400', bg: 'bg-red-400/10', icon: 'fa-times-circle' };
+                        html += `
+                            <div class="glass p-3 rounded-xl border-l-2 ${sc.border} mb-1.5 opacity-70 hover:opacity-100 transition-all">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <span class="font-bold text-white text-xs">${l.teacher_name}</span>
+                                        <span class="text-[10px] text-slate-500 ml-2">${dateStr}</span>
+                                    </div>
+                                    <span class="${sc.bg} ${sc.border} ${sc.text} text-[9px] font-bold px-2 py-0.5 rounded-full border">
+                                        <i class="fas ${sc.icon} mr-1"></i>${l.status}
+                                    </span>
+                                </div>
+                                ${l.admin_remarks ? `<p class="text-[10px] text-slate-500 mt-1 italic">${l.admin_remarks}</p>` : ''}
+                            </div>
+                        `;
+                    });
+                }
+
+                container.innerHTML = html;
+            },
+
+            updateLeaveStatus: async (leaveId, newStatus) => {
+                const remarks = newStatus === 'DECLINED' ? prompt('Reason for declining (optional):') || '' : '';
+                try {
+                    const res = await fetch(`${API_URL}/leave-applications/${leaveId}/update-status/`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Token ${auth.token}` },
+                        body: JSON.stringify({ status: newStatus, admin_remarks: remarks })
+                    });
+                    if (!res.ok) { const d = await res.json(); throw new Error(d.error || 'Failed'); }
+                    // Refresh the leaves tab
+                    const container = document.getElementById('data-manager');
+                    if (container) app.renderAdminLeaves(container);
+                } catch (e) { alert('Error: ' + e.message); }
+            },
+
             // ═══ DRAG & DROP ═══
             handleDragStart: (e) => {
                 const tile = e.target.closest('.tt-tile');
@@ -2198,6 +2516,7 @@
                                 <div class="flex gap-2">
                                     <button onclick="app.activeTab='subjects';app.renderDataManager()" class="flex-1 py-2.5 text-sm font-bold bg-gradient-to-r from-atlas-teal to-atlas-indigo text-white rounded-lg shadow-lg shadow-atlas-teal/10 transition-all" id="btn-tab-sub">Subjects</button>
                                     <button onclick="app.activeTab='teachers';app.renderDataManager()" class="flex-1 py-2.5 text-sm font-bold bg-white/[0.03] hover:bg-white/[0.06] text-slate-400 rounded-lg border border-white/5 transition-all" id="btn-tab-tea">Faculty</button>
+                                    <button onclick="app.activeTab='leaves';app.renderDataManager()" class="flex-1 py-2.5 text-sm font-bold bg-white/[0.03] hover:bg-white/[0.06] text-slate-400 rounded-lg border border-white/5 transition-all" id="btn-tab-leaves">Leaves</button>
                                 </div>
                             </div>
                         </div>
@@ -2221,7 +2540,31 @@
                             </div>
                         </div>
                     </div>
-                    ` : ``}
+                    ` : `
+                    <!-- FACULTY SIDEBAR -->
+                    <div class="w-full lg:w-[340px] min-w-[320px] bg-[#0c1122]/80 border-r border-white/[0.04] flex flex-col z-20 shadow-2xl relative backdrop-blur-xl">
+                        <div class="p-5 border-b border-white/[0.04] bg-[#0c1122]/90 backdrop-blur-xl">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-atlas-teal/20 to-indigo-500/20 flex items-center justify-center text-atlas-teal text-lg border border-atlas-teal/20">
+                                    <i class="fas fa-user-tie"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold font-exo text-sm text-white">${auth.user.teacher_name || auth.user.username}</h3>
+                                    <p class="text-[10px] text-slate-500 tracking-wider">FACULTY PANEL</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="app.facultyTab='availability';app.renderFacultyPanel()" class="flex-1 py-2 text-xs font-bold bg-gradient-to-r from-atlas-teal to-atlas-indigo text-white rounded-lg shadow-lg shadow-atlas-teal/10 transition-all" id="btn-ftab-avail">
+                                    <i class="fas fa-calendar-alt mr-1"></i>Availability
+                                </button>
+                                <button onclick="app.facultyTab='leaves';app.renderFacultyPanel()" class="flex-1 py-2 text-xs font-bold bg-white/[0.03] hover:bg-white/[0.06] text-slate-400 rounded-lg border border-white/5 transition-all" id="btn-ftab-leaves">
+                                    <i class="fas fa-plane-departure mr-1"></i>Leave
+                                </button>
+                            </div>
+                        </div>
+                        <div id="faculty-panel" class="flex-grow overflow-y-auto p-4 space-y-3"></div>
+                    </div>
+                    `}
 
                     <!-- TIMETABLE AREA -->
                     <div class="flex-grow flex flex-col bg-[#0a0f1e] relative z-10">

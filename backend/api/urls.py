@@ -5,8 +5,9 @@ from .views import (
     StudentBatchViewSet, DepartmentViewSet,
     GeneratedTimetableViewSet, TimetableSlotViewSet,
     PinnedSlotViewSet, TeacherUnavailabilityViewSet,
+    LeaveApplicationViewSet,
     trigger_generation, approve_timetable, export_timetable_pdf, swap_slots,
-    detect_conflicts
+    detect_conflicts, update_leave_status
 )
 
 router = DefaultRouter()
@@ -19,6 +20,7 @@ router.register(r'timetables', GeneratedTimetableViewSet)
 router.register(r'slots', TimetableSlotViewSet)
 router.register(r'pinned-slots', PinnedSlotViewSet)
 router.register(r'teacher-unavailability', TeacherUnavailabilityViewSet)
+router.register(r'leave-applications', LeaveApplicationViewSet)
 
 urlpatterns = [
     path('slots/swap/', swap_slots, name='swap-slots'),
@@ -26,5 +28,6 @@ urlpatterns = [
     path('timetables/<int:pk>/approve/', approve_timetable, name='approve-timetable'),
     path('timetables/<int:pk>/pdf/', export_timetable_pdf, name='export-timetable-pdf'),
     path('timetables/<int:pk>/conflicts/', detect_conflicts, name='detect-conflicts'),
+    path('leave-applications/<int:pk>/update-status/', update_leave_status, name='update-leave-status'),
     path('', include(router.urls)),
 ]
