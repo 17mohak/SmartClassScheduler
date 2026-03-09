@@ -1100,6 +1100,40 @@
         </div>
     </div>
 
+    <!-- ═══ Teacher Availability Modal ═══ -->
+    <div id="availability-modal" class="fixed inset-0 z-[200] bg-black/80 backdrop-blur-2xl flex items-center justify-center hidden">
+        <div class="glass-heavy p-8 rounded-3xl w-full max-w-2xl shadow-2xl relative border border-white/10">
+            <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-purple-500 to-transparent"></div>
+            <button onclick="app.closeAvailabilityGrid()" class="absolute top-4 right-4 w-8 h-8 rounded-full glass flex items-center justify-center text-slate-400 hover:text-purple-400 hover:border-purple-400/30 transition-all">
+                <i class="fas fa-times text-sm"></i>
+            </button>
+            <div class="mb-6">
+                <div class="w-14 h-14 bg-gradient-to-br from-purple-500/20 to-indigo-600/20 rounded-2xl flex items-center justify-center text-xl text-purple-400 mb-3 border border-purple-500/20 mx-auto">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <h3 class="text-2xl text-center font-bold font-exo text-white" id="avail-modal-title">Manage Availability</h3>
+                <p class="text-xs text-center text-slate-500 mt-1">Click slots to mark them as unavailable (red).</p>
+            </div>
+            <div class="overflow-hidden rounded-xl border border-white/5">
+                <table class="w-full text-left border-collapse bg-black/20">
+                    <thead>
+                        <tr>
+                            <th class="px-3 py-2 text-[10px] font-bold text-slate-500 border-b border-white/5">TIME</th>
+                            <th class="px-3 py-2 text-[10px] font-bold text-slate-500 border-b border-white/5 text-center">MON</th>
+                            <th class="px-3 py-2 text-[10px] font-bold text-slate-500 border-b border-white/5 text-center">TUE</th>
+                            <th class="px-3 py-2 text-[10px] font-bold text-slate-500 border-b border-white/5 text-center">WED</th>
+                            <th class="px-3 py-2 text-[10px] font-bold text-slate-500 border-b border-white/5 text-center">THU</th>
+                            <th class="px-3 py-2 text-[10px] font-bold text-slate-500 border-b border-white/5 text-center">FRI</th>
+                        </tr>
+                    </thead>
+                    <tbody id="avail-grid-body"></tbody>
+                </table>
+            </div>
+            <input type="hidden" id="avail-teacher-id">
+            <button onclick="app.saveTeacherAvailability()" id="btn-save-avail" class="w-full mt-6 py-3 font-bold text-sm text-white bg-gradient-to-r from-purple-500 to-indigo-600 rounded-xl hover:shadow-lg hover:shadow-purple-500/20 transition-all">Save Availability</button>
+        </div>
+    </div>
+
     <script>
         const API_URL = 'http://127.0.0.1:8000/api';
 
@@ -2194,6 +2228,102 @@
                     btn.textContent = prevText;
                     btn.disabled = false;
                 }
+            },
+            
+            // ═══ TEACHER AVAILABILITY ═══
+            openAvailabilityGrid: async (teacherId = null) => {
+                const targetTeacherId = teacherId || auth.user.teacher_id;
+                if (!targetTeacherId) return alert("Teacher profile not found.");
+                
+                document.getElementById('avail-modal-title').textContent = teacherId ? "Manage Faculty Availability" : "My Availability";
+                
+                try {
+                    const res = await fetch(`${API_URL}/teacher-unavailability/?teacher=${targetTeacherId}`, { headers: { 'Authorization': `Token ${auth.token}` } });
+                    const currentUnavail = await res.json();
+                    
+                    const tbody = document.getElementById('avail-grid-body');
+                    tbody.innerHTML = '';
+                    const days = ['MON', 'TUE', 'WED', 'THU', 'FRI'];
+                    
+                    TIME_SLOTS.forEach((slot, i) => {
+                        if (i === 2) {
+                            tbody.innerHTML += `<tr><td colspan="6" class="py-1 text-center text-[9px] font-bold text-slate-600 tracking-[0.3em] bg-black/10">BREAK</td></tr>`;
+                        }
+                        let tr = `<tr class="border-b border-white/[0.03]">
+                            <td class="px-3 py-2 font-mono text-slate-500 text-xs">${slot.label.split(' - ')[0]}</td>`;
+                        
+                        days.forEach(day => {
+                            const isUnavail = currentUnavail.some(u => u.day === day && u.slot_index === i);
+                            const bg = isUnavail ? 'bg-red-500/20 border-red-500/30 text-red-400' : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20';
+                            const icon = isUnavail ? 'fa-times' : 'fa-check';
+                            tr += `<td class="p-1 text-center"><button onclick="app.toggleAvailabilitySlot(this)" data-day="${day}" data-slot="${i}" class="w-full py-1.5 rounded border transition-all text-xs ${bg}" data-state="${isUnavail ? 'busy' : 'free'}"><i class="fas ${icon}"></i></button></td>`;
+                        });
+                        tr += `</tr>`;
+                        tbody.innerHTML += tr;
+                    });
+                    
+                    document.getElementById('avail-teacher-id').value = targetTeacherId;
+                    
+                    document.getElementById('availability-modal').classList.remove('hidden');
+                    gsap.from("#availability-modal > div", { y: 20, opacity: 0, scale: 0.95, duration: 0.3, ease: "back.out(1.4)" });
+                } catch (e) {
+                    alert("Error loading availability");
+                }
+            },
+            
+            closeAvailabilityGrid: () => {
+                gsap.to("#availability-modal > div", { y: 20, opacity: 0, scale: 0.95, duration: 0.2, ease: "power2.in", onComplete: () => {
+                    document.getElementById('availability-modal').classList.add('hidden');
+                }});
+            },
+            
+            toggleAvailabilitySlot: (btn) => {
+                const isBusy = btn.dataset.state === 'busy';
+                if (isBusy) {
+                    btn.dataset.state = 'free';
+                    btn.className = "w-full py-1.5 rounded border transition-all text-xs bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20";
+                    btn.innerHTML = '<i class="fas fa-check"></i>';
+                } else {
+                    btn.dataset.state = 'busy';
+                    btn.className = "w-full py-1.5 rounded border transition-all text-xs bg-red-500/20 border-red-500/30 text-red-400 hover:bg-red-500/30";
+                    btn.innerHTML = '<i class="fas fa-times"></i>';
+                }
+            },
+            
+            saveTeacherAvailability: async () => {
+                const teacherId = document.getElementById('avail-teacher-id').value;
+                const btn = document.getElementById('btn-save-avail');
+                btn.textContent = "Saving..."; btn.disabled = true;
+                
+                try {
+                    const res = await fetch(`${API_URL}/teacher-unavailability/?teacher=${teacherId}`, { headers: { 'Authorization': `Token ${auth.token}` } });
+                    const currentUnavail = await res.json();
+                    
+                    const desiredBusy = [];
+                    document.querySelectorAll('#avail-grid-body button').forEach(b => {
+                        if (b.dataset.state === 'busy') {
+                            desiredBusy.push({ day: b.dataset.day, slot_index: parseInt(b.dataset.slot) });
+                        }
+                    });
+                    
+                    const toDelete = currentUnavail.filter(c => !desiredBusy.some(d => d.day === c.day && d.slot_index === c.slot_index));
+                    const toCreate = desiredBusy.filter(d => !currentUnavail.some(c => c.day === d.day && c.slot_index === d.slot_index));
+                    
+                    const requests = [];
+                    toDelete.forEach(u => requests.push(fetch(`${API_URL}/teacher-unavailability/${u.id}/`, { method: 'DELETE', headers: { 'Authorization': `Token ${auth.token}` } })));
+                    toCreate.forEach(u => requests.push(fetch(`${API_URL}/teacher-unavailability/`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Token ${auth.token}` },
+                        body: JSON.stringify({ teacher: teacherId, day: u.day, slot_index: u.slot_index })
+                    })));
+                    
+                    await Promise.all(requests);
+                    app.closeAvailabilityGrid();
+                } catch (e) {
+                    alert('Error saving availability');
+                } finally {
+                    btn.textContent = "Save Availability"; btn.disabled = false;
+                }
             }
         };
 
@@ -2379,6 +2509,7 @@
                         <div class="h-14 border-b border-white/[0.04] flex items-center justify-between px-8 glass-heavy sticky top-0 z-30">
                             <h3 class="font-bold font-exo text-base tracking-tight" id="table-title">${auth.user.is_admin ? 'Select Department & Batch' : 'My Weekly Schedule'}</h3>
                             <div class="flex items-center gap-3">
+                                ${!auth.user.is_admin ? '<button onclick="app.openAvailabilityGrid()" class="text-[10px] font-bold text-purple-400 bg-purple-400/[0.08] hover:bg-purple-400/[0.15] px-3 py-1.5 rounded-full border border-purple-400/20 transition-all"><i class="fas fa-calendar-check mr-1"></i>Manage Availability</button>' : ''}
                                 <button id="pdf-download-btn" class="hidden text-[10px] font-bold text-slate-400 bg-white/[0.04] hover:bg-white/[0.08] px-3 py-1.5 rounded-full border border-white/10 transition-all hover:text-atlas-teal"><i class="fas fa-file-pdf mr-1"></i>PDF</button>
                                 <div class="text-[10px] font-mono text-atlas-teal bg-atlas-teal/[0.06] px-3 py-1.5 rounded-full border border-atlas-teal/15 tracking-wider" id="status-text">${auth.user.is_admin ? 'ADMIN' : 'MY TIMETABLE'}</div>
                             </div>

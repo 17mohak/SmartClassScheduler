@@ -107,10 +107,26 @@ class PinnedSlotViewSet(BaseViewSet):
         return qs
 
 
+class IsAdminOrOwnerTeacher(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.user and request.user.is_staff:
+            return True
+        # Teachers can only view/create/delete if it involves their own ID
+        if request.user and hasattr(request.user, 'teacher'):
+            return True
+        return request.method in permissions.SAFE_METHODS
+
+    def has_object_permission(self, request, view, obj):
+        if request.user and request.user.is_staff:
+            return True
+        if hasattr(request.user, 'teacher') and obj.teacher == request.user.teacher:
+            return True
+        return False
+
 class TeacherUnavailabilityViewSet(BaseViewSet):
     queryset = TeacherUnavailability.objects.all()
     serializer_class = TeacherUnavailabilitySerializer
-    permission_classes = [IsAdminOrReadOnly]
+    permission_classes = [IsAdminOrOwnerTeacher]
 
     def get_queryset(self):
         qs = super().get_queryset()
