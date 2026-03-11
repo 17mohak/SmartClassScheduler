@@ -41,7 +41,7 @@ To run this project locally, you will need to run the backend and frontend simul
 
 ### 1. Clone the Repository
 \`\`\`bash
-git clone https://github.com/yourusername/SmartClassScheduler.git
+git clone https://github.com/17mohak/SmartClassScheduler.git
 cd SmartClassScheduler
 \`\`\`
 
@@ -97,4 +97,4 @@ The Google OR-Tools CP-SAT solver explores millions of mathematical permutations
 ---
 
 ## 👨‍💻 Author
-**Mohak Mandwani** (App ID: 2406506)
+**Mohak Mandwani**
